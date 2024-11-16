@@ -2,7 +2,6 @@
 - name: Configure Cluster Manager
   hosts: manager0
   become: true
-  become_user: "splunk"
   remote_user: ubuntu
   
   tasks:
