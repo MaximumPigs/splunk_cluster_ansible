@@ -1,12 +1,7 @@
 ---
-- name: Update web servers
+- name: Configure Search Head
   hosts: searchhead
   remote_user: ubuntu
-
-  tasks:
-  - name: Update cache
-    ansible.builtin.apt:
-      update_cache: yes
 
   - name: Update all packages to their latest version
     ansible.builtin.apt:
