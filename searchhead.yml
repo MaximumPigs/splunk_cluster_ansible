@@ -10,4 +10,4 @@
     ansible.builtin.apt:
       name: "*"
       state: latest
-      lock_timeout: 600
+      lock_timeout: 30
