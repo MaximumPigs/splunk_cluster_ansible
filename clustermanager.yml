@@ -2,8 +2,8 @@
 - name: Configure Cluster Manager
   hosts: manager0
   remote_user: ubuntu
-
-- tasks:
+  
+  tasks:
 
   - name: Update all packages to their latest version
     ansible.builtin.apt:
