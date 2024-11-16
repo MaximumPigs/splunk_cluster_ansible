@@ -1,6 +1,7 @@
 ---
 - name: Configure Search Head
   hosts: searchhead
+  become: true
   remote_user: ubuntu
 
   tasks:

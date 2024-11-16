@@ -1,6 +1,7 @@
 ---
 - name: Configure Cluster Manager
   hosts: manager0
+  become: true
   remote_user: ubuntu
   
   tasks:
