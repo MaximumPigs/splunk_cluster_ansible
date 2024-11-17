@@ -37,12 +37,14 @@
   - name: Add new repositoryLocation
     replace:
       path: /opt/splunk/etc/system/local/deploymentclient.conf
+      regexp: '^repositoryLocation'
       line: 'repositoryLocation = SPLUNK_HOME/etc/manager-apps'
       insertafter: '[deployment-client]'
 
   - name: Add new serverRepositoryLocationPolicy
     replace:
       path: /opt/splunk/etc/system/local/deploymentclient.conf
+      regexp: '^serverRepositoryLocationPolicy'
       line: 'serverRepositoryLocationPolicy = rejectAlways'
       insertafter: '[deployment-client]'
 
