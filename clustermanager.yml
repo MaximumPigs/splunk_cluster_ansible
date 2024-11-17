@@ -38,14 +38,14 @@
     lineinfile:
       path: /opt/splunk/etc/system/local/deploymentclient.conf
       line: 'repositoryLocation = SPLUNK_HOME/etc/manager-apps'
-      insertafter: '[deployment-client]'
+      insertafter: '^\[deployment-client\]'
       state: present
 
   - name: Add new serverRepositoryLocationPolicy
     lineinfile:
       path: /opt/splunk/etc/system/local/deploymentclient.conf
       line: 'serverRepositoryLocationPolicy = rejectAlways'
-      insertafter: '[deployment-client]'
+      insertafter: '^\[deployment-client\]'
       state: present      
 
   - name: Configure indexer clustering
