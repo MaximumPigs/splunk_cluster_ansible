@@ -6,11 +6,45 @@
   
   tasks:
 
+  - name: Set HTTPS
+    command: "/opt/splunk/bin/splunk enable web-ssl -auth admin:Administrator1!"
+
   # - name: Add license Manager
   #   command: "/opt/splunk/bin/splunk edit licenser-localpeer -manager_uri https://splunkmgr1.aws.maximumpigs.com:8089 -auth admin:Administrator1!"
 
   - name: Set Deployment Server
     command: "/opt/splunk/bin/splunk set deploy-poll https://splunkmgr1.aws.maximumpigs.com:8089 -auth admin:Administrator1!"
+
+  - name: Check for [deployment-client] stanza
+      lineinfile:
+      name: /opt/splunk/etc/system/local/deploymentclient.conf
+      search_string: '[deployment-client]'
+      line: '[deployment-client]'
+      state: present
+
+  - name: Remove repositoryLocation from deploymentclient.conf
+      lineinfile:
+      name: /opt/splunk/etc/system/local/deploymentclient.conf
+      regexp: '^repositoryLocation'
+      state: absent
+
+  - name: Remove repositoryLocation from deploymentclient.conf
+      lineinfile:
+      name: /opt/splunk/etc/system/local/deploymentclient.conf
+      regexp: '^serverRepositoryLocationPolicy'
+      state: absent      
+
+  - name: Add new repositoryLocation
+    replace:
+      path: /opt/splunk/etc/system/local/deploymentclient.conf
+      line: 'repositoryLocation = SPLUNK_HOME/etc/manager-apps'
+      insertafter: '[deployment-client]'
+
+  - name: Add new serverRepositoryLocationPolicy
+    replace:
+      path: /opt/splunk/etc/system/local/deploymentclient.conf
+      line: 'serverRepositoryLocationPolicy = rejectAlways'
+      insertafter: '[deployment-client]'
 
 ## TODO - Modify deployment server with repositoryLocation = SPLUNK_HOME/etc/manager-apps and serverRepositoryLocationPolicy = rejectAlways
 

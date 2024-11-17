@@ -6,6 +6,9 @@
   
   tasks:
 
+  - name: Disable Web Access
+    command: "/opt/splunk/bin/splunk disable webserver -auth admin:Administrator1!"
+
   # - name: Add license Manager
   #   command: "/opt/splunk/bin/splunk edit licenser-localpeer -manager_uri https://splunkmgr1.aws.maximumpigs.com:8089 -auth admin:Administrator1!"
 
