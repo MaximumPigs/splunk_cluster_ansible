@@ -6,6 +6,7 @@
 
   tasks:
 
+## Doesn't work - rethink
   - name: Configure the deployer for SH Clustering
     command: "/opt/splunk/bin/splunk edit shcluster-config -secret shcluster1 -shcluster_label shcluster1 -auth admin:Administrator1!"
 
