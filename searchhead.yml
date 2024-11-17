@@ -14,7 +14,7 @@
     command: "/opt/splunk/bin/splunk edit cluster-config -mode searchhead -manager_uri https://splunkmgr0.aws.maximumpigs.com:8089 -secret idxcluster1 -auth admin:Administrator1!"
 
   - name: Initialise the SH Cluster
-    command: "/opt/splunk/bin/splunk init shcluster-config -mgmt_uri https://{{hostname.stdout}}).aws.maximumpigs.com:8089 -replication_port 9200 -replication_factor 2 -conf_deploy_fetch_url https://splunkmgr0.aws.maximumpigs.com:8089 -secret shcluster1 -shcluster_label shcluster1 -auth admin:Administrator1!"
+    command: "/opt/splunk/bin/splunk init shcluster-config -mgmt_uri https://{{ hostname.stdout }}).aws.maximumpigs.com:8089 -replication_port 9200 -replication_factor 2 -conf_deploy_fetch_url https://splunkmgr0.aws.maximumpigs.com:8089 -secret shcluster1 -shcluster_label shcluster1 -auth admin:Administrator1!"
 
   - name: Restart Splunk
     command: "/opt/splunk/bin/splunk restart"
