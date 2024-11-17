@@ -39,14 +39,14 @@
       path: /opt/splunk/etc/system/local/deploymentclient.conf
       regexp: '^repositoryLocation'
       line: 'repositoryLocation = SPLUNK_HOME/etc/manager-apps'
-      insertafter: '[deployment-client]'
+      after: '[deployment-client]'
 
   - name: Add new serverRepositoryLocationPolicy
     replace:
       path: /opt/splunk/etc/system/local/deploymentclient.conf
       regexp: '^serverRepositoryLocationPolicy'
       line: 'serverRepositoryLocationPolicy = rejectAlways'
-      insertafter: '[deployment-client]'
+      after: '[deployment-client]'
 
   - name: Configure indexer clustering
     command: "/opt/splunk/bin/splunk edit cluster-config -mode manager -replication_factor 2 -search_factor 2 -secret idxcluster1 -cluster_label idxcluster1 -auth admin:Administrator1!"
