@@ -17,7 +17,7 @@
     command: "/opt/splunk/bin/splunk init shcluster-config -mgmt_uri https://$(hostname).aws.maximumpigs.com:8089 -replication_port 9200 -replication_factor 2 -conf_deploy_fetch_url https://splunkmgr0.aws.maximumpigs.com:8089 -secret shcluster1 -shcluster_label shcluster1 -auth admin:Administrator1!"
 
   - name: Set the SH Captain on SH0
-    command: "/opt/splunk/bin/splunk bootstrap shcluster-captain -servers_list \"splunksh0.aws.maximumpigs.com:8089,splunksh1.aws.maximumpigs.com:8089,splunksh2.aws.maximumpigs.com:8089\"" -auth admin:Administrator1!"
+    command: "/opt/splunk/bin/splunk bootstrap shcluster-captain -servers_list \"splunksh0.aws.maximumpigs.com:8089,splunksh1.aws.maximumpigs.com:8089,splunksh2.aws.maximumpigs.com:8089\" -auth admin:Administrator1!"
     when: hostname.stdout == "splunksh0"
 
   - name: Restart Splunk
