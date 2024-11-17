@@ -6,8 +6,8 @@
 
   tasks:
 
-  - name: Add license Manager
-    command: "/opt/splunk/bin/splunk edit licenser-localpeer -manager_uri https://splunkmgr1.aws.maximumpigs.com:8089 -auth admin:Administrator1!"
+  # - name: Add license Manager
+  #   command: "/opt/splunk/bin/splunk edit licenser-localpeer -manager_uri https://splunkmgr1.aws.maximumpigs.com:8089 -auth admin:Administrator1!"
 
   - name: Extract index_and_forward app
     ansible.builtin.unarchive:
