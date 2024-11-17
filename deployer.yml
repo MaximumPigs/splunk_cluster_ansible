@@ -1,12 +1,20 @@
 ---
 - name: Configure Deployer
-  hosts: manager0
+  hosts: manager1
   become: true
   remote_user: ubuntu
 
   tasks:
 
-## Doesn't work - rethink
+  - name: Add license Manager
+    command: "/opt/splunk/bin/splunk edit licenser-localpeer -manager_uri https://splunkmgr1.aws.maximumpigs.com:8089"
+
+  - name: Set Deployment Server
+    command: "/opt/splunk/bin/splunk set deploy-poll https://splunkmgr1.aws.maximumpigs.com:8089"
+
+## TODO - Modify deployment server with repositoryLocation = SPLUNK_HOME/etc/manager-apps and serverRepositoryLocationPolicy = rejectAlways
+
+## TODO - Change this because CLI doesn't work. SED server.conf
   - name: Configure the deployer for SH Clustering
     command: "/opt/splunk/bin/splunk edit shcluster-config -secret shcluster1 -shcluster_label shcluster1 -auth admin:Administrator1!"
 

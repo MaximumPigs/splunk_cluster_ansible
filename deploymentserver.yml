@@ -1,0 +1,20 @@
+---
+- name: Configure Deployment Server
+  hosts: manager1
+  become: true
+  remote_user: ubuntu
+
+  tasks:
+
+  - name: Add license Manager
+    command: "/opt/splunk/bin/splunk edit licenser-localpeer -manager_uri https://splunkmgr1.aws.maximumpigs.com:8089"
+
+  - name: Extract index_and_forward app
+    ansible.builtin.unarchive:
+      src: /opt/index_and_forward.tgz
+      dest: /opt/splunk/etc/deployment-apps/
+
+# TODO Set Deployment Server Classes
+
+  - name: Restart Splunk
+    command: "/opt/splunk/bin/splunk restart"

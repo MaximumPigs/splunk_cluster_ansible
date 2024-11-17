@@ -1,0 +1,16 @@
+---
+- name: Configure common configuration items
+  hosts: manager1
+  become: true
+  remote_user: ubuntu
+  
+  tasks:
+
+  - name: Add license Manager
+    command: "/opt/splunk/bin/splunk edit licenser-localpeer -manager_uri https://splunkmgr1.aws.maximumpigs.com:8089"
+
+  - name: Add as a searchead to indexer cluster
+    command: "/opt/splunk/bin/splunk edit cluster-config -mode searchhead -manager_uri https://splunkmgr0.aws.maximumpigs.com:8089 -secret idxcluster1"
+
+  - name: Restart Splunk
+    command: "/opt/splunk/bin/splunk restart"

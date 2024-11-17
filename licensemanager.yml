@@ -1,0 +1,15 @@
+---
+- name: Configure Cluster Manager
+  hosts: manager1
+  become: true
+  remote_user: ubuntu
+  
+  tasks:
+
+# TODO - test
+
+  - name: Add license
+    command: "/opt/splunk/bin/splunk add licenses /opt/splunk.license"
+
+  - name: Restart Splunk
+    command: "/opt/splunk/bin/splunk restart"
