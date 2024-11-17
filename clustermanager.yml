@@ -37,7 +37,7 @@
   - name: Add new repositoryLocation
     lineinfile:
       path: /opt/splunk/etc/system/local/deploymentclient.conf
-      line: 'repositoryLocation = SPLUNK_HOME/etc/manager-apps'
+      line: 'repositoryLocation = $SPLUNK_HOME/etc/manager-apps'
       insertafter: '^\[deployment-client\]'
       state: present
 
