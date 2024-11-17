@@ -9,7 +9,7 @@
 # TODO - test
 
   - name: Add license
-    command: "/opt/splunk/bin/splunk add licenses /opt/splunk.license"
+    command: "/opt/splunk/bin/splunk add licenses /opt/splunk.license -auth admin:Administrator1!"
 
   - name: Restart Splunk
     command: "/opt/splunk/bin/splunk restart"

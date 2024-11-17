@@ -7,7 +7,7 @@
   tasks:
 
   - name: Add license Manager
-    command: "/opt/splunk/bin/splunk edit licenser-localpeer -manager_uri https://splunkmgr1.aws.maximumpigs.com:8089"
+    command: "/opt/splunk/bin/splunk edit licenser-localpeer -manager_uri https://splunkmgr1.aws.maximumpigs.com:8089 -auth admin:Administrator1!"
 
   - name: Join the indexer cluster
     command: "/opt/splunk/bin/splunk edit cluster-config -mode peer -manager_uri https://splunkmgr0.aws.maximumpigs.com:8089 -replication_port 9887 -cluster_label idxcluster1 -secret idxcluster1 -auth admin:Administrator1!"

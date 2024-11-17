@@ -9,10 +9,10 @@
 
 
   - name: Add license Manager
-    command: "/opt/splunk/bin/splunk edit licenser-localpeer -manager_uri https://splunkmgr1.aws.maximumpigs.com:8089"
+    command: "/opt/splunk/bin/splunk edit licenser-localpeer -manager_uri https://splunkmgr1.aws.maximumpigs.com:8089 -auth admin:Administrator1!"
 
   - name: Set Deployment Server
-    command: "/opt/splunk/bin/splunk set deploy-poll https://splunkmgr1.aws.maximumpigs.com:8089"
+    command: "/opt/splunk/bin/splunk set deploy-poll https://splunkmgr1.aws.maximumpigs.com:8089 -auth admin:Administrator1!"
 
 ## TODO - Modify deployment server with repositoryLocation = SPLUNK_HOME/etc/manager-apps and serverRepositoryLocationPolicy = rejectAlways
 
