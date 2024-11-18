@@ -9,8 +9,11 @@
   - name: Set HTTPS
     command: "/opt/splunk/bin/splunk enable web-ssl -auth admin:Administrator1!"
 
+  - name: Test
+    command: "curl https://splunkmgr1.aws.maximumpigs.com:8089 -k"
+
   - name: Add license Manager
-    shell: "/opt/splunk/bin/splunk edit licenser-localpeer -manager_uri 'https://splunkmgr1.aws.maximumpigs.com:8089' -auth admin:Administrator1!"
+    command: "/opt/splunk/bin/splunk edit licenser-localpeer -manager_uri 'https://splunkmgr1.aws.maximumpigs.com:8089' -auth admin:Administrator1!"
 
   - name: Extract index_and_forward app
     unarchive:
