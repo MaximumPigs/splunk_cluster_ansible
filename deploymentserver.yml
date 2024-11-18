@@ -3,6 +3,10 @@
   hosts: manager1
   vars:
     license_manager: "splunkmgr1"
+    deployment_server: "splunkmgr1"
+    cluster_manager: "splunkmgr0"
+    deployer: "splunkmgr1"
+    sh_captain: "splunksh0"
   become: true
   remote_user: ubuntu
 
@@ -12,7 +16,7 @@
     command: "/opt/splunk/bin/splunk enable web-ssl -auth admin:Administrator1!"
 
   - name: Add license Manager
-    command: "/opt/splunk/bin/splunk edit licenser-localpeer -manager_uri 'https://splunkmgr1.aws.maximumpigs.com:8089' -auth admin:Administrator1!"
+    command: "/opt/splunk/bin/splunk edit licenser-localpeer -manager_uri 'https://{{ license_manager }}.aws.maximumpigs.com:8089' -auth admin:Administrator1!"
     when: license_manager != inventory_hostname_short
 
   - name: Extract index_and_forward app

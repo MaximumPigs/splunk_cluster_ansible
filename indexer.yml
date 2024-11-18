@@ -1,6 +1,12 @@
 ---
 - name: Configure Indexer
   hosts: indexer
+  vars:
+    license_manager: "splunkmgr1"
+    deployment_server: "splunkmgr1"
+    cluster_manager: "splunkmgr0"
+    deployer: "splunkmgr1"
+    sh_captain: "splunksh0"
   become: true
   remote_user: ubuntu
   
@@ -10,10 +16,11 @@
     command: "/opt/splunk/bin/splunk disable webserver -auth admin:Administrator1!"
 
   - name: Add license Manager
-    command: "/opt/splunk/bin/splunk edit licenser-localpeer -manager_uri https://splunkmgr1.aws.maximumpigs.com:8089 -auth admin:Administrator1!"
+    command: "/opt/splunk/bin/splunk edit licenser-localpeer -manager_uri 'https://{{ license_manager }}.aws.maximumpigs.com:8089' -auth admin:Administrator1!"
+    when: license_manager != inventory_hostname_short
 
   - name: Join the indexer cluster
-    command: "/opt/splunk/bin/splunk edit cluster-config -mode peer -manager_uri https://splunkmgr0.aws.maximumpigs.com:8089 -replication_port 9887 -cluster_label idxcluster1 -secret idxcluster1 -auth admin:Administrator1!"
+    command: "/opt/splunk/bin/splunk edit cluster-config -mode peer -manager_uri https://{{ cluster_manager }}.aws.maximumpigs.com:8089 -replication_port 9887 -cluster_label idxcluster1 -secret idxcluster1 -auth admin:Administrator1!"
 
   - name: Restart Splunk
     command: "/opt/splunk/bin/splunk restart"
