@@ -13,8 +13,8 @@
     command: hostname
     register: hostname
 
-  # - name: Add license Manager
-  #   command: "/opt/splunk/bin/splunk edit licenser-localpeer -manager_uri https://splunkmgr1.aws.maximumpigs.com:8089 -auth admin:Administrator1!"
+  - name: Add license Manager
+    command: "/opt/splunk/bin/splunk edit licenser-localpeer -manager_uri https://splunkmgr1.aws.maximumpigs.com:8089 -auth admin:Administrator1!"
 
   - name: Join the indexer cluster
     command: "/opt/splunk/bin/splunk edit cluster-config -mode searchhead -manager_uri https://splunkmgr0.aws.maximumpigs.com:8089 -secret idxcluster1 -auth admin:Administrator1!"

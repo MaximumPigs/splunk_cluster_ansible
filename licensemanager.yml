@@ -1,5 +1,5 @@
 ---
-- name: Configure Cluster Manager
+- name: Configure License Manager
   hosts: manager1
   become: true
   remote_user: ubuntu
