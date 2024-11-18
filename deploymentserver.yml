@@ -2,18 +2,15 @@
 - name: Configure Deployment Server
   hosts: manager1
   become: true
-  remote_user: ubuntu
+  remote_user: splunk
 
   tasks:
 
   - name: Set HTTPS
     command: "/opt/splunk/bin/splunk enable web-ssl -auth admin:Administrator1!"
 
-  - name: Test
-    command: "curl https://ifconfig.me -k"
-
   - name: Add license Manager
-    command: "/opt/splunk/bin/splunk edit licenser-localpeer -manager_uri 'https://splunkmgr1.aws.maximumpigs.com:8089' -auth admin:Administrator1!"
+    shell: "/opt/splunk/bin/splunk edit licenser-localpeer -manager_uri 'https://splunkmgr1.aws.maximumpigs.com:8089' -auth admin:Administrator1!"
 
   - name: Extract index_and_forward app
     unarchive:
