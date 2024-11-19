@@ -8,7 +8,7 @@
     deployer: "splunkmgr1"
     sh_captain: "splunksh0"
   become: true
-  remote_user: ubuntu
+  remote_user: splunk
 
   tasks:
 

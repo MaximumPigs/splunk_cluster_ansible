@@ -1,0 +1,17 @@
+---
+- name: Configure Cluster Manager
+  hosts: manager0
+  vars:
+    license_manager: "splunkmgr1"
+    deployment_server: "splunkmgr1"
+    cluster_manager: "splunkmgr0"
+    deployer: "splunkmgr1"
+    sh_captain: "splunksh0"
+  become: true
+  remote_user: splunk
+
+  - name: Prepare Cluster Bundle
+    command: "/opt/splunk/bin/splunk validate cluster-bundle -check-restart -auth admin:Administrator1!"
+
+  - name: Apply Cluster Bundle
+    command: "/opt/splunk/bin/splunk apply cluster-bundle -auth admin:Administrator1!"

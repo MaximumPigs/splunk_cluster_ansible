@@ -8,7 +8,7 @@
     deployer: "splunkmgr1"
     sh_captain: "splunksh0"
   become: true
-  remote_user: ubuntu
+  remote_user: splunk
   
   tasks:
 
@@ -23,43 +23,40 @@
     command: "/opt/splunk/bin/splunk set deploy-poll https://{{ deployment_server }}.aws.maximumpigs.com:8089 -auth admin:Administrator1!"
     when: deployment_server != inventory_hostname_short
 
-# TODO - Reconsider doing this in serverclass.conf on the deployment server. - See if it's possible to add this host to 2 different server classes, one to receive cluster apps and the other to recieve base apps
-
-  # - name: Check for [deployment-client] stanza
-  #   lineinfile:
-  #     name: /opt/splunk/etc/system/local/deploymentclient.conf
-  #     search_string: '[deployment-client]'
-  #     line: '[deployment-client]'
-  #     state: present
-
-  # - name: Remove repositoryLocation from deploymentclient.conf
-  #   lineinfile:
-  #     name: /opt/splunk/etc/system/local/deploymentclient.conf
-  #     regexp: '^repositoryLocation'
-  #     state: absent
-
-  # - name: Remove repositoryLocation from deploymentclient.conf
-  #   lineinfile:
-  #     name: /opt/splunk/etc/system/local/deploymentclient.conf
-  #     regexp: '^serverRepositoryLocationPolicy'
-  #     state: absent      
-
-  # - name: Add new repositoryLocation
-  #   lineinfile:
-  #     path: /opt/splunk/etc/system/local/deploymentclient.conf
-  #     line: 'repositoryLocation = $SPLUNK_HOME/etc/manager-apps'
-  #     insertafter: '^\[deployment-client\]'
-  #     state: present
-
-  # - name: Add new serverRepositoryLocationPolicy
-  #   lineinfile:
-  #     path: /opt/splunk/etc/system/local/deploymentclient.conf
-  #     line: 'serverRepositoryLocationPolicy = rejectAlways'
-  #     insertafter: '^\[deployment-client\]'
-  #     state: present
+  - name: Extract index_and_forward app
+    unarchive:
+      remote_src: yes
+      src: /opt/index_and_forward.tgz
+      dest: /opt/splunk/etc/apps/    
 
   - name: Configure indexer clustering
     command: "/opt/splunk/bin/splunk edit cluster-config -mode manager -replication_factor 2 -search_factor 2 -secret idxcluster1 -cluster_label idxcluster1 -auth admin:Administrator1!"
+
+## Configure Indexer Discovery
+
+  - name: Create server.conf in cm_idx_discovery_base/default
+    blockinfile: 
+      path: /opt/splunk/etc/apps/cm_idx_discovery_base/default/server.conf
+      create: true
+      mode: '0655'
+      owner: 'splunk'
+      prepend_newline: true
+      block: |
+        [indexer_discovery]
+        pass4SymmKey = idxdiscovery1
+
+## Add inputs app - listen on 9997
+
+  - name: Create inputs.conf in idx_inputs_base/default
+    blockinfile: 
+      path: /opt/splunk/etc/manager-apps/idx_inputs_base/default/inputs.conf
+      create: true
+      mode: '0655'
+      owner: 'splunk'
+      prepend_newline: true
+      block: |
+        [splunktcp://9997]
+        disabled = 0
 
   - name: Restart Splunk
     command: "/opt/splunk/bin/splunk restart"

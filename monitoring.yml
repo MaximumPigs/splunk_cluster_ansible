@@ -8,23 +8,33 @@
     deployer: "splunkmgr1"
     sh_captain: "splunksh0"
   become: true
-  remote_user: ubuntu
+  remote_user: splunk
   
   tasks:
 
   - name: Set HTTPS
     command: "/opt/splunk/bin/splunk enable web-ssl -auth admin:Administrator1!"
 
-  - name: Set Deployment Server
-    command: "/opt/splunk/bin/splunk set deploy-poll https://{{ deployment_server }}.aws.maximumpigs.com:8089 -auth admin:Administrator1!"
-    when: deployment_server != inventory_hostname_short    
-
   - name: Add license Manager
     command: "/opt/splunk/bin/splunk edit licenser-localpeer -manager_uri 'https://{{ license_manager }}.aws.maximumpigs.com:8089' -auth admin:Administrator1!"
     when: license_manager != inventory_hostname_short
 
+  - name: Set Deployment Server
+    command: "/opt/splunk/bin/splunk set deploy-poll https://{{ deployment_server }}.aws.maximumpigs.com:8089 -auth admin:Administrator1!"
+    when: deployment_server != inventory_hostname_short    
+
+  - name: Extract index_and_forward app
+    unarchive:
+      remote_src: yes
+      src: /opt/index_and_forward.tgz
+      dest: /opt/splunk/etc/apps/  
+
   - name: Add as a searchead to indexer cluster
-    command: "/opt/splunk/bin/splunk edit cluster-config -mode searchhead -manager_uri https://{{ cluster_manager }}.aws.maximumpigs.com:8089 -secret idxcluster1"
+    command: "/opt/splunk/bin/splunk edit cluster-config -mode searchhead -manager_uri https://{{ cluster_manager }}.aws.maximumpigs.com:8089 -secret idxcluster1"  
+
+# TODO - Enable distributed monitoring
+
+# TODO - Set server roles
 
   - name: Restart Splunk
     command: "/opt/splunk/bin/splunk restart"

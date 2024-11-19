@@ -8,13 +8,13 @@
     deployer: "splunkmgr1"
     sh_captain: "splunksh0"
   become: true
-  remote_user: ubuntu
+  remote_user: splunk
 
   tasks:
 
   - name: Set HTTPS
     command: "/opt/splunk/bin/splunk enable web-ssl -auth admin:Administrator1!"
-    
+
   - name: Add license Manager
     command: "/opt/splunk/bin/splunk edit licenser-localpeer -manager_uri 'https://{{ license_manager }}.aws.maximumpigs.com:8089' -auth admin:Administrator1!"
     when: license_manager != inventory_hostname_short
@@ -22,6 +22,12 @@
   - name: Set Deployment Server
     command: "/opt/splunk/bin/splunk set deploy-poll https://{{ deployment_server }}.aws.maximumpigs.com:8089 -auth admin:Administrator1!"
     when: deployment_server != inventory_hostname_short
+
+  - name: Extract index_and_forward app
+    unarchive:
+      remote_src: yes
+      src: /opt/index_and_forward.tgz
+      dest: /opt/splunk/etc/apps/
 
 ## TODO - Modify deployment server with repositoryLocation = SPLUNK_HOME/etc/manager-apps and serverRepositoryLocationPolicy = rejectAlways
 

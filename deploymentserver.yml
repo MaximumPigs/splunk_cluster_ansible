@@ -8,13 +8,13 @@
     deployer: "splunkmgr1"
     sh_captain: "splunksh0"
   become: true
-  remote_user: ubuntu
+  remote_user: splunk
 
   tasks:
 
   - name: Set HTTPS
     command: "/opt/splunk/bin/splunk enable web-ssl -auth admin:Administrator1!"
-
+  
   - name: Add license Manager
     command: "/opt/splunk/bin/splunk edit licenser-localpeer -manager_uri 'https://{{ license_manager }}.aws.maximumpigs.com:8089' -auth admin:Administrator1!"
     when: license_manager != inventory_hostname_short
@@ -23,7 +23,14 @@
     unarchive:
       remote_src: yes
       src: /opt/index_and_forward.tgz
-      dest: /opt/splunk/etc/deployment-apps/
+      dest: /opt/splunk/etc/apps/
+
+  - name: Extract index_and_forward app to deployment-apps
+    unarchive:
+      remote_src: yes
+      src: /opt/index_and_forward.tgz
+      dest: /opt/splunk/etc/deployment-apps/      
+
 
 # TODO Set Deployment Server Classes
 
