@@ -16,4 +16,4 @@
     command: "/opt/splunk/bin/splunk validate cluster-bundle -check-restart -auth admin:Administrator1!"
 
   - name: Apply Cluster Bundle
-    command: "/opt/splunk/bin/splunk apply cluster-bundle -auth admin:Administrator1!"
+    command: "/opt/splunk/bin/splunk apply cluster-bundle"

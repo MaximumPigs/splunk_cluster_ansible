@@ -25,11 +25,11 @@
     register: license
 
   - name: Add license
-    command: "/opt/splunk/bin/splunk add licenses /opt/splunk.license -auth admin:Administrator1!"
+    command: "/opt/splunk/bin/splunk add licenses /opt/splunk.license"
     when: license.changed == true
 
   - name: Set Deployment Server
-    command: "/opt/splunk/bin/splunk set deploy-poll https://{{ deployment_server }}.aws.maximumpigs.com:8089 -auth admin:Administrator1!"
+    command: "/opt/splunk/bin/splunk set deploy-poll https://{{ deployment_server }}.aws.maximumpigs.com:8089"
     when: deployment_server != inventory_hostname_short
 
   - name: Extract index_and_forward app
