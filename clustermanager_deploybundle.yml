@@ -10,6 +10,8 @@
   become: true
   remote_user: splunk
 
+  tasks:
+
   - name: Prepare Cluster Bundle
     command: "/opt/splunk/bin/splunk validate cluster-bundle -check-restart -auth admin:Administrator1!"
 
