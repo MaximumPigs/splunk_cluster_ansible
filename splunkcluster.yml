@@ -1,4 +1,5 @@
 # License Manager
+- import_playbook: licensemanager.yml
 
 # Deployment Server
 

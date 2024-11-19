@@ -32,6 +32,9 @@
   - name: Configure indexer clustering
     command: "/opt/splunk/bin/splunk edit cluster-config -mode manager -replication_factor 2 -search_factor 2 -secret idxcluster1 -cluster_label idxcluster1 -auth admin:Administrator1!"
 
+  - name: Add as a searchead to indexer cluster
+    command: "/opt/splunk/bin/splunk edit cluster-config -mode searchhead -manager_uri https://{{ cluster_manager }}.aws.maximumpigs.com:8089 -secret idxcluster1"     
+
 ## Configure Indexer Discovery
 
   - name: Create server.conf in cm_idx_discovery_base/default
