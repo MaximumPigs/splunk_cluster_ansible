@@ -15,12 +15,22 @@
   - name: Set HTTPS
     command: "/opt/splunk/bin/splunk enable web-ssl -auth admin:Administrator1!"
 
+  - name: Check for existing license:
+    lineinfile:
+      path: /opt/splunk/etc/system/local/server.conf
+      line: '[license]'
+      state: present
+    check_mode: yes
+    ignore_errors: yes
+    register: license
+
   - name: Add license
     command: "/opt/splunk/bin/splunk add licenses /opt/splunk.license -auth admin:Administrator1!"
+    when: license.rc == 0
 
   - name: Set Deployment Server
     command: "/opt/splunk/bin/splunk set deploy-poll https://{{ deployment_server }}.aws.maximumpigs.com:8089 -auth admin:Administrator1!"
-    when: deployment_server != inventory_hostname_short    
+    when: deployment_server != inventory_hostname_short
 
   - name: Extract index_and_forward app
     unarchive:
