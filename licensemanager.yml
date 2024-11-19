@@ -15,7 +15,7 @@
   - name: Set HTTPS
     command: "/opt/splunk/bin/splunk enable web-ssl -auth admin:Administrator1!"
 
-  - name: Check for existing license:
+  - name: Check for existing license
     lineinfile:
       path: /opt/splunk/etc/system/local/server.conf
       line: '[license]'
