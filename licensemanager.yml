@@ -26,7 +26,7 @@
 
   - name: Add license
     command: "/opt/splunk/bin/splunk add licenses /opt/splunk.license -auth admin:Administrator1!"
-    when: license.changed == false
+    when: license.changed == true
 
   - name: Set Deployment Server
     command: "/opt/splunk/bin/splunk set deploy-poll https://{{ deployment_server }}.aws.maximumpigs.com:8089 -auth admin:Administrator1!"
