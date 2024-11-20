@@ -13,7 +13,7 @@
   tasks:
 
   - name: Set HTTPS
-    command: "/opt/splunk/bin/splunk enable web-ssl --accept-license --answer-yes --seed-passwd Administrator1!"
+    command: "/opt/splunk/bin/splunk enable web-ssl -auth admin:Administrator1!"
 
   - name: Check for existing license
     lineinfile:
