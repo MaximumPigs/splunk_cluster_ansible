@@ -13,7 +13,7 @@
   tasks:
 
   - name: Disable Web Access
-    command: "/opt/splunk/bin/splunk disable webserver -auth admin:Administrator1!"
+    command: "/opt/splunk/bin/splunk disable webserver --accept-license --answer-yes --seed-passwd "Administrator1!"
 
   - name: Add license Manager
     command: "/opt/splunk/bin/splunk edit licenser-localpeer -manager_uri 'https://{{ license_manager }}.aws.maximumpigs.com:8089'"
@@ -22,5 +22,5 @@
   - name: Join the indexer cluster
     command: "/opt/splunk/bin/splunk edit cluster-config -mode peer -manager_uri https://{{ cluster_manager }}.aws.maximumpigs.com:8089 -replication_port 9887 -cluster_label idxcluster1 -secret idxcluster1"
 
-  - name: Restart Splunk
-    command: "/opt/splunk/bin/splunk restart"
+  - name: Start Splunk
+    command: "/opt/splunk/bin/splunk start"

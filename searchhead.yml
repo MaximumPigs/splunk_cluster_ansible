@@ -13,7 +13,7 @@
   tasks:
 
   - name: Set HTTPS
-    command: "/opt/splunk/bin/splunk enable web-ssl -auth admin:Administrator1!"
+    command: "/opt/splunk/bin/splunk enable web-ssl --accept-license --answer-yes --seed-passwd "Administrator1!"
 
   - name: Add license Manager
     command: "/opt/splunk/bin/splunk edit licenser-localpeer -manager_uri 'https://{{ license_manager }}.aws.maximumpigs.com:8089'"
@@ -34,5 +34,5 @@
     command: "/opt/splunk/bin/splunk bootstrap shcluster-captain -servers_list \"https://splunksh0.aws.maximumpigs.com:8089, https://splunksh1.aws.maximumpigs.com:8089, https://splunksh2.aws.maximumpigs.com:8089\""
     when: inventory_hostname_short == "sh_captain"
 
-  - name: Restart Splunk
-    command: "/opt/splunk/bin/splunk restart"
+  - name: Start Splunk
+    command: "/opt/splunk/bin/splunk start"

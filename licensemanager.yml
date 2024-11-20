@@ -13,7 +13,7 @@
   tasks:
 
   - name: Set HTTPS
-    command: "/opt/splunk/bin/splunk enable web-ssl -auth admin:Administrator1!"
+    command: "/opt/splunk/bin/splunk enable web-ssl --accept-license --answer-yes --seed-passwd "Administrator1!"
 
   - name: Check for existing license
     lineinfile:
@@ -38,5 +38,5 @@
       src: /opt/index_and_forward.tgz
       dest: /opt/splunk/etc/apps/
 
-  - name: Restart Splunk
-    command: "/opt/splunk/bin/splunk restart"
+  - name: Start Splunk
+    command: "/opt/splunk/bin/splunk start"
