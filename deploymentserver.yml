@@ -14,7 +14,7 @@
   tasks:
 
   - name: Check if Splunkd is running
-    command: "/opt/splunk/bin/splunk enable boot-start -systemd-managed 1 -user splunk --accept-license --answer-yes --seed-passwd Administrator1!"
+    command: "/opt/splunk/bin/splunk status"
     register: splunkd
 
   - name: Initialise and set boot start
