@@ -39,10 +39,6 @@
   - name: Set HTTPS
     command: "/opt/splunk/bin/splunk enable web-ssl -auth admin:Administrator1!"
     ignore_errors: true
-  
-  - name: Add license Manager
-    command: "/opt/splunk/bin/splunk edit licenser-localpeer -manager_uri 'https://{{ license_manager }}.aws.maximumpigs.com:8089'"
-    when: license_manager != inventory_hostname_short
 
   - name: Create Index and Forward App
     blockinfile: 
@@ -108,3 +104,9 @@
       name: Splunkd.service
       state: restarted
     when: splunkd.changed == "false"
+
+## Need to do this after start
+
+  - name: Add license Manager
+    command: "/opt/splunk/bin/splunk edit licenser-localpeer -manager_uri 'https://{{ license_manager }}.aws.maximumpigs.com:8089'"
+    when: license_manager != inventory_hostname_short    
