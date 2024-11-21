@@ -19,11 +19,12 @@
       name: Splunkd.service
       state: started
     check_mode: true
+    ignore_errors: true
     register: splunkd
 
   - name: Initialise and set boot start
     command: "/opt/splunk/bin/splunk enable boot-start -systemd-managed 1 -user splunk --accept-license --answer-yes --seed-passwd Administrator1!"
-    when: splunkd.changed == "true"
+    when: splunkd.changed == "true" OR splunkd.rc != 0
 
   - name: Set HTTPS
     command: "/opt/splunk/bin/splunk enable web-ssl -auth admin:Administrator1!"
@@ -90,7 +91,7 @@
     systemd_service:
       name: Splunkd.service
       state: started
-    when: splunkd.changed == "true"
+    when: splunkd.changed == "true" OR splunkd.rc != 0
 
   - name: Restart Splunk
     systemd_service:
