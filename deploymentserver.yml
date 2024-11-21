@@ -61,8 +61,8 @@
       state: started
     when: '"splunkd is not running" in splunkd.stdout' 
 
-  - name: Reload Splunk
+  - name: Restart Splunk
     systemd_service:
       name: Splunkd.service
-      state: reloaded
+      state: restarted
     when: '"splunkd is running" in splunkd.stdout'
