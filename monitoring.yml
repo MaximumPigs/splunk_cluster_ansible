@@ -10,23 +10,23 @@
   become: true
   remote_user: splunk
   
-  tasks:
+# General tasks
+
+  - name: Check if Splunkd is running
+    command: "/opt/splunk/bin/splunk status"
+    register: splunkd
 
   - name: Initialise and set boot start
     command: "/opt/splunk/bin/splunk enable boot-start -systemd-managed 1 -user splunk --accept-license --answer-yes --seed-passwd Administrator1!"
+    when: '"splunkd is not running" in splunkd.stdout'
 
   - name: Set HTTPS
     command: "/opt/splunk/bin/splunk enable web-ssl -auth admin:Administrator1!"
-
+    ignore_errors: true
+  
   - name: Add license Manager
     command: "/opt/splunk/bin/splunk edit licenser-localpeer -manager_uri 'https://{{ license_manager }}.aws.maximumpigs.com:8089'"
     when: license_manager != inventory_hostname_short
-
-  - name: Set Deployment Server
-    command: "/opt/splunk/bin/splunk set deploy-poll https://{{ deployment_server }}.aws.maximumpigs.com:8089"
-    when: deployment_server != inventory_hostname_short    
-
-## Configure Forwarding
 
   - name: Create Index and Forward App
     blockinfile: 
@@ -50,6 +50,8 @@
         manager_uri=https://splunkmgr0.aws.maximumpigs.com:8089
         pass4SymmKey = idxdiscovery1  
 
+# Node specific tasks
+
   - name: Add as a searchead to indexer cluster
     command: "/opt/splunk/bin/splunk edit cluster-config -mode searchhead -manager_uri https://{{ cluster_manager }}.aws.maximumpigs.com:8089 -secret idxcluster1!"
 
@@ -61,4 +63,13 @@
 # TODO - Set server roles
 
   - name: Start Splunk
-    command: "/opt/splunk/bin/splunk start"
+    systemd_service:
+      name: Splunkd.service
+      state: started
+    when: '"splunkd is not running" in splunkd.stdout' 
+
+  - name: Restart Splunk
+    systemd_service:
+      name: Splunkd.service
+      state: restarted
+    when: '"splunkd is running" in splunkd.stdout'

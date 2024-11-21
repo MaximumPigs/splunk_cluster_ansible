@@ -12,15 +12,47 @@
 
   tasks:
 
+# General tasks
+
+  - name: Check if Splunkd is running
+    command: "/opt/splunk/bin/splunk status"
+    register: splunkd
+
   - name: Initialise and set boot start
     command: "/opt/splunk/bin/splunk enable boot-start -systemd-managed 1 -user splunk --accept-license --answer-yes --seed-passwd Administrator1!"
+    when: '"splunkd is not running" in splunkd.stdout'
 
   - name: Set HTTPS
     command: "/opt/splunk/bin/splunk enable web-ssl -auth admin:Administrator1!"
-
+    ignore_errors: true
+  
   - name: Add license Manager
     command: "/opt/splunk/bin/splunk edit licenser-localpeer -manager_uri 'https://{{ license_manager }}.aws.maximumpigs.com:8089'"
     when: license_manager != inventory_hostname_short
+
+  - name: Create Index and Forward App
+    blockinfile: 
+      path: /opt/splunk/etc/apps/index_and_forward/default/outputs.conf
+      create: true
+      mode: '0655'
+      owner: 'splunk'
+      prepend_newline: true
+      block: |
+        [indexAndForward]
+        index = false
+
+        [tcpout]
+        defaultGroup = discovery-group
+        indexAndForward = false
+
+        [tcpout:discovery-group]
+        indexerDiscovery = idxdiscovery1
+
+        [indexer_discovery:idxdiscovery1]
+        manager_uri=https://splunkmgr0.aws.maximumpigs.com:8089
+        pass4SymmKey = idxdiscovery1  
+
+# Node specific tasks
 
   - name: Join the indexer cluster
     command: "/opt/splunk/bin/splunk edit cluster-config -mode searchhead -manager_uri https://{{ cluster_manager }}.aws.maximumpigs.com:8089 -secret idxcluster1"
@@ -28,12 +60,18 @@
   - name: Initialise the SH Cluster
     command: "/opt/splunk/bin/splunk init shcluster-config -mgmt_uri https://{{ inventory_hostname_short }}.aws.maximumpigs.com:8089 -replication_port 9200 -replication_factor 2 -conf_deploy_fetch_url https://{{ deployer }}.aws.maximumpigs.com:8089 -secret shcluster1 -shcluster_label shcluster1"
 
+  - name: Start Splunk
+    systemd_service:
+      name: Splunkd.service
+      state: started
+    when: '"splunkd is not running" in splunkd.stdout' 
+
   - name: Restart Splunk
-    command: "/opt/splunk/bin/splunk restart"
+    systemd_service:
+      name: Splunkd.service
+      state: restarted
+    when: '"splunkd is running" in splunkd.stdout'
 
   - name: Set the SH Captain on SH0
     command: "/opt/splunk/bin/splunk bootstrap shcluster-captain -servers_list \"https://splunksh0.aws.maximumpigs.com:8089, https://splunksh1.aws.maximumpigs.com:8089, https://splunksh2.aws.maximumpigs.com:8089\""
     when: inventory_hostname_short == "sh_captain"
-
-  - name: Start Splunk
-    command: "/opt/splunk/bin/splunk start"
