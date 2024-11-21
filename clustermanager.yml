@@ -15,12 +15,15 @@
 # General tasks
 
   - name: Check if Splunkd is running
-    command: "/opt/splunk/bin/splunk status"
+    systemd_service:
+      name: Splunkd.service
+      state: started
+    check_mode: full
     register: splunkd
 
   - name: Initialise and set boot start
     command: "/opt/splunk/bin/splunk enable boot-start -systemd-managed 1 -user splunk --accept-license --answer-yes --seed-passwd Administrator1!"
-    when: '"splunkd is not running" in splunkd.stdout'
+    when: splunkd.changed == "true"
 
   - name: Set HTTPS
     command: "/opt/splunk/bin/splunk enable web-ssl -auth admin:Administrator1!"
