@@ -31,8 +31,6 @@
   - name: Restart Splunk
     command: "/opt/splunk/bin/splunk restart"
 
-# TODO - Add other SH to list
-
   - name: Set the SH Captain on SH0
     command: "/opt/splunk/bin/splunk bootstrap shcluster-captain -servers_list \"https://splunksh0.aws.maximumpigs.com:8089, https://splunksh1.aws.maximumpigs.com:8089, https://splunksh2.aws.maximumpigs.com:8089\""
     when: inventory_hostname_short == "sh_captain"
