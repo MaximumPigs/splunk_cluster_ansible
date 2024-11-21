@@ -23,6 +23,7 @@
 
   - name: Set HTTPS
     command: "/opt/splunk/bin/splunk enable web-ssl -auth admin:Administrator1!"
+    ignore_errors: true
   
   - name: Add license Manager
     command: "/opt/splunk/bin/splunk edit licenser-localpeer -manager_uri 'https://{{ license_manager }}.aws.maximumpigs.com:8089'"
@@ -55,9 +56,13 @@
 # TODO Set Deployment Server Classes
 
   - name: Start Splunk
-    command: "/opt/splunk/bin/splunk start"
+    systemd_service:
+      name: Splunkd.service
+      state: started
     when: '"splunkd is not running" in splunkd.stdout' 
 
-  - name: Restart Splunk
-    command: "/opt/splunk/bin/splunk start"
+  - name: Reload Splunk
+    systemd_service:
+      name: Splunkd.service
+      state: reloaded
     when: '"splunkd is running" in splunkd.stdout'
