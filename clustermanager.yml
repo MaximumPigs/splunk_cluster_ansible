@@ -107,7 +107,7 @@
   - name: Wait for web server to be available
     uri:
       url: "https://localhost:8000"
-      follow_redirects: none
+      follow_redirects: all
       method: GET
     register: _result
     until: _result.status == 200
