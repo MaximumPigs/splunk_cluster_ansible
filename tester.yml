@@ -16,6 +16,7 @@
       url: "https://localhost:8000"
       follow_redirects: all
       method: GET
+      validate_certs: false
     register: _result
     until: _result.status == 200
     retries: 20
