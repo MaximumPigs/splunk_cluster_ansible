@@ -38,7 +38,7 @@
 
   - name: Create _webserver app
     blockinfile: 
-      path: /opt/splunk/etc/apps/_webserver/default/web.conf
+      path: /opt/splunk/etc/apps/a_webserver/default/web.conf
       create: true
       mode: '0655'
       owner: 'splunk'
@@ -47,9 +47,9 @@
         [settings]
         enableSplunkWebSSL = true
 
-  - name: Create _indexandforward app
+  - name: Create a_indexandforward app
     blockinfile: 
-      path: /opt/splunk/etc/apps/_indexandforward/default/outputs.conf
+      path: /opt/splunk/etc/apps/a_indexandforward/default/outputs.conf
       create: true
       mode: '0655'
       owner: 'splunk'
