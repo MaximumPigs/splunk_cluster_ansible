@@ -56,3 +56,8 @@
 
   - name: Start Splunk
     command: "/opt/splunk/bin/splunk start"
+    when: '"splunkd is not running" in splunkd.stdout' 
+
+  - name: Restart Splunk
+    command: "/opt/splunk/bin/splunk start"
+    when: '"splunkd is not running" not in splunkd.stdout'
