@@ -34,7 +34,7 @@
 
   - name: Initialise and set boot start
     command: "/opt/splunk/bin/splunk enable boot-start -systemd-managed 1 -user splunk --accept-license --answer-yes --seed-passwd Administrator1!"
-    when: splunkd.changed == "true" or ansible_facts['services']['Splunkd.service']['status'] | default('not-found') == 'not-found'
+    when: ansible_facts['services']['Splunkd.service']['status'] | default('not-found') == 'not-found'
 
   - name: Add license Manager
     command: "/opt/splunk/bin/splunk edit licenser-localpeer -manager_uri 'https://{{ license_manager }}.aws.maximumpigs.com:8089'"
@@ -105,13 +105,13 @@
     systemd_service:
       name: Splunkd.service
       state: started
-    when: splunkd.changed == "true" or ansible_facts['services']['Splunkd.service']['status'] | default('not-found') == 'not-found'
+    when: splunkd.changed == true or ansible_facts['services']['Splunkd.service']['status'] | default('not-found') == 'not-found'
 
   - name: Restart Splunk
     systemd_service:
       name: Splunkd.service
       state: restarted
-    when: splunkd.changed == "false"
+    when: splunkd.changed == false
 
   - name: Configure indexer clustering
     command: "/opt/splunk/bin/splunk edit cluster-config -mode manager -replication_factor 2 -search_factor 2 -secret idxcluster1 -cluster_label idxcluster1" 
