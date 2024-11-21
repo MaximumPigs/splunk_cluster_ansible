@@ -106,7 +106,7 @@
     when: splunkd.changed == false
 
   - name: Add license Manager
-    command: "/opt/splunk/bin/splunk edit licenser-localpeer -manager_uri 'https://{{ license_manager }}.aws.maximumpigs.com:8089'"
+    command: "/opt/splunk/bin/splunk edit licenser-localpeer -manager_uri 'https://{{ license_manager }}.aws.maximumpigs.com:8089' -auth admin:Administrator1!"
     when: license_manager != inventory_hostname_short
 
   - name: Configure indexer clustering
