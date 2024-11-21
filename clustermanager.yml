@@ -18,7 +18,7 @@
     systemd_service:
       name: Splunkd.service
       state: started
-    check_mode: full
+    check_mode: true
     register: splunkd
 
   - name: Initialise and set boot start
