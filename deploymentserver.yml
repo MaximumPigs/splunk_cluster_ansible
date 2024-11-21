@@ -95,10 +95,6 @@
 
 # TODO Set Deployment Server Classes
 
-  - name: Add license Manager
-    command: "/opt/splunk/bin/splunk edit licenser-localpeer -manager_uri 'https://{{ license_manager }}.aws.maximumpigs.com:8089'"
-    when: license_manager != inventory_hostname_short
-
   - name: Start Splunk
     systemd_service:
       name: Splunkd.service
@@ -110,3 +106,7 @@
       name: Splunkd.service
       state: restarted
     when: splunkd.changed == false
+
+  - name: Add license Manager
+    command: "/opt/splunk/bin/splunk edit licenser-localpeer -manager_uri 'https://{{ license_manager }}.aws.maximumpigs.com:8089'"
+    when: license_manager != inventory_hostname_short
