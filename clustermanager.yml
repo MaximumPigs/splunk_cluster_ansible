@@ -98,15 +98,11 @@
         disabled = 0
 
   - name: Start Splunk
-    systemd_service:
-      name: Splunkd.service
-      state: started
+    command: "/opt/splunk/bin/splunk start"
     when: splunkd.changed == true or ansible_facts['services']['Splunkd.service']['status'] | default('not-found') == 'not-found'
 
   - name: Restart Splunk
-    systemd_service:
-      name: Splunkd.service
-      state: restarted
+    command: "/opt/splunk/bin/splunk restart"
     when: splunkd.changed == false
 
   - name: Add license Manager
