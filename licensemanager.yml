@@ -98,4 +98,4 @@
     systemd_service:
       name: Splunkd.service
       state: restarted
-    when: splunkd.change == false
+    when: splunkd.changed == false
