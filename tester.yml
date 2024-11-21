@@ -1,0 +1,22 @@
+---
+- name: Configure Cluster Manager
+  hosts: manager0
+  vars:
+    license_manager: "splunkmgr1"
+    deployment_server: "splunkmgr1"
+    cluster_manager: "splunkmgr0"
+    deployer: "splunkmgr1"
+    sh_captain: "splunksh0"
+  become: true
+  remote_user: splunk
+  
+  tasks:
+  - name: Wait for web server to be available
+    uri:
+      url: "https://localhost:8000"
+      follow_redirects: all
+      method: GET
+    register: _result
+    until: _result.status == 200
+    retries: 20
+    delay: 5
