@@ -90,10 +90,10 @@
     systemd_service:
       name: Splunkd.service
       state: started
-    when: '"splunkd is not running" in splunkd.stdout' 
+    when: splunkd.changed == "true"
 
   - name: Restart Splunk
     systemd_service:
       name: Splunkd.service
       state: restarted
-    when: '"splunkd is running" in splunkd.stdout'
+    when: splunkd.changed == "false"
