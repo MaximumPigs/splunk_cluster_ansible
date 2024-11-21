@@ -36,13 +36,24 @@
     command: "/opt/splunk/bin/splunk enable boot-start -systemd-managed 1 -user splunk --accept-license --answer-yes --seed-passwd Administrator1!"
     when: splunkd.changed == "true" or ansible_facts['services']['Splunkd.service']['status'] | default('not-found') == 'not-found'
 
-  - name: Set HTTPS
-    command: "/opt/splunk/bin/splunk enable web-ssl -auth admin:Administrator1!"
-    ignore_errors: true
+  - name: Add license Manager
+    command: "/opt/splunk/bin/splunk edit licenser-localpeer -manager_uri 'https://{{ license_manager }}.aws.maximumpigs.com:8089'"
+    when: license_manager != inventory_hostname_short
 
-  - name: Create Index and Forward App
+  - name: Create _webserver app
     blockinfile: 
-      path: /opt/splunk/etc/apps/index_and_forward/default/outputs.conf
+      path: /opt/splunk/etc/apps/_webserver/default/web.conf
+      create: true
+      mode: '0655'
+      owner: 'splunk'
+      prepend_newline: true
+      block: |
+        [settings]
+        enableSplunkWebSSL = true
+
+  - name: Create _indexandforward app
+    blockinfile: 
+      path: /opt/splunk/etc/apps/_indexandforward/default/outputs.conf
       create: true
       mode: '0655'
       owner: 'splunk'
@@ -60,7 +71,7 @@
 
         [indexer_discovery:idxdiscovery1]
         manager_uri=https://splunkmgr0.aws.maximumpigs.com:8089
-        pass4SymmKey = idxdiscovery1
+        pass4SymmKey = idxdiscovery1  
 
 # Node specific tasks
 
@@ -101,10 +112,6 @@
       name: Splunkd.service
       state: restarted
     when: splunkd.changed == "false"
-
-  - name: Add license Manager
-    command: "/opt/splunk/bin/splunk edit licenser-localpeer -manager_uri 'https://{{ license_manager }}.aws.maximumpigs.com:8089'"
-    when: license_manager != inventory_hostname_short
 
   - name: Configure indexer clustering
     command: "/opt/splunk/bin/splunk edit cluster-config -mode manager -replication_factor 2 -search_factor 2 -secret idxcluster1 -cluster_label idxcluster1" 
