@@ -12,25 +12,41 @@
   
 # General tasks
 
+  - name: Make sure splunk folder is owned by splunk user
+    file:
+      path: /opt/splunk
+      owner: splunk
+      recurse: yes
+
+  - name: Populate service facts
+    service_facts:
+
   - name: Check if Splunkd is running
-    command: "/opt/splunk/bin/splunk status"
+    systemd_service:
+      name: Splunkd.service
+      state: started
+    check_mode: true
+    when: ansible_facts['services']['Splunkd.service']['status'] | default('not-found') != 'not-found'
     register: splunkd
 
   - name: Initialise and set boot start
     command: "/opt/splunk/bin/splunk enable boot-start -systemd-managed 1 -user splunk --accept-license --answer-yes --seed-passwd Administrator1!"
-    when: '"splunkd is not running" in splunkd.stdout'
+    when: ansible_facts['services']['Splunkd.service']['status'] | default('not-found') == 'not-found'
 
-  - name: Set HTTPS
-    command: "/opt/splunk/bin/splunk enable web-ssl -auth admin:Administrator1!"
-    ignore_errors: true
-  
-  - name: Add license Manager
-    command: "/opt/splunk/bin/splunk edit licenser-localpeer -manager_uri 'https://{{ license_manager }}.aws.maximumpigs.com:8089'"
-    when: license_manager != inventory_hostname_short
-
-  - name: Create Index and Forward App
+  - name: Create _webserver app
     blockinfile: 
-      path: /opt/splunk/etc/apps/index_and_forward/default/outputs.conf
+      path: /opt/splunk/etc/apps/_webserver/default/web.conf
+      create: true
+      mode: '0655'
+      owner: 'splunk'
+      prepend_newline: true
+      block: |
+        [settings]
+        enableSplunkWebSSL = true
+
+  - name: Create _indexandforward app
+    blockinfile: 
+      path: /opt/splunk/etc/apps/_indexandforward/default/outputs.conf
       create: true
       mode: '0655'
       owner: 'splunk'
@@ -63,13 +79,24 @@
 # TODO - Set server roles
 
   - name: Start Splunk
-    systemd_service:
-      name: Splunkd.service
-      state: started
-    when: '"splunkd is not running" in splunkd.stdout' 
+    command: "/opt/splunk/bin/splunk start"
+    when: splunkd.changed == true or ansible_facts['services']['Splunkd.service']['status'] | default('not-found') == 'not-found'
 
   - name: Restart Splunk
-    systemd_service:
-      name: Splunkd.service
-      state: restarted
-    when: '"splunkd is running" in splunkd.stdout'
+    command: "/opt/splunk/bin/splunk restart"
+    when: splunkd.changed == false
+
+  - name: Wait for web server to be available
+    uri:
+      url: "https://localhost:8000"
+      follow_redirects: all
+      method: GET
+      validate_certs: false
+    register: _result
+    until: _result.status == 200
+    retries: 20
+    delay: 5
+
+  - name: Add license Manager
+    command: "/opt/splunk/bin/splunk edit licenser-localpeer -manager_uri 'https://{{ license_manager }}.aws.maximumpigs.com:8089' -auth admin:Administrator1!"
+    when: license_manager != inventory_hostname_short 

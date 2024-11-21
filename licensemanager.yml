@@ -36,10 +36,6 @@
     command: "/opt/splunk/bin/splunk enable boot-start -systemd-managed 1 -user splunk --accept-license --answer-yes --seed-passwd Administrator1!"
     when: ansible_facts['services']['Splunkd.service']['status'] | default('not-found') == 'not-found'
 
-  - name: Add license Manager
-    command: "/opt/splunk/bin/splunk edit licenser-localpeer -manager_uri 'https://{{ license_manager }}.aws.maximumpigs.com:8089'"
-    when: license_manager != inventory_hostname_short
-
   - name: Create _webserver app
     blockinfile: 
       path: /opt/splunk/etc/apps/_webserver/default/web.conf
@@ -75,6 +71,25 @@
 
 # Node specific tasks
 
+  - name: Start Splunk
+    command: "/opt/splunk/bin/splunk start"
+    when: splunkd.changed == true or ansible_facts['services']['Splunkd.service']['status'] | default('not-found') == 'not-found'
+
+  - name: Restart Splunk
+    command: "/opt/splunk/bin/splunk restart"
+    when: splunkd.changed == false
+
+  - name: Wait for web server to be available
+    uri:
+      url: "https://localhost:8000"
+      follow_redirects: all
+      method: GET
+      validate_certs: false
+    register: _result
+    until: _result.status == 200
+    retries: 20
+    delay: 5
+
   - name: Check for existing license
     lineinfile:
       path: /opt/splunk/etc/system/local/server.conf
@@ -87,15 +102,3 @@
   - name: Add license
     command: "/opt/splunk/bin/splunk add licenses /opt/splunk.license"
     when: license.changed == true
-
-  - name: Start Splunk
-    systemd_service:
-      name: Splunkd.service
-      state: started
-    when: splunkd.changed == true or ansible_facts['services']['Splunkd.service']['status'] | default('not-found') == 'not-found'
-
-  - name: Restart Splunk
-    systemd_service:
-      name: Splunkd.service
-      state: restarted
-    when: splunkd.changed == false

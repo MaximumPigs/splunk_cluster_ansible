@@ -96,17 +96,24 @@
 # TODO Set Deployment Server Classes
 
   - name: Start Splunk
-    systemd_service:
-      name: Splunkd.service
-      state: started
+    command: "/opt/splunk/bin/splunk start"
     when: splunkd.changed == true or ansible_facts['services']['Splunkd.service']['status'] | default('not-found') == 'not-found'
 
   - name: Restart Splunk
-    systemd_service:
-      name: Splunkd.service
-      state: restarted
+    command: "/opt/splunk/bin/splunk restart"
     when: splunkd.changed == false
 
+  - name: Wait for web server to be available
+    uri:
+      url: "https://localhost:8000"
+      follow_redirects: all
+      method: GET
+      validate_certs: false
+    register: _result
+    until: _result.status == 200
+    retries: 20
+    delay: 5
+
   - name: Add license Manager
-    command: "/opt/splunk/bin/splunk edit licenser-localpeer -manager_uri 'https://{{ license_manager }}.aws.maximumpigs.com:8089'"
-    when: license_manager != inventory_hostname_short
+    command: "/opt/splunk/bin/splunk edit licenser-localpeer -manager_uri 'https://{{ license_manager }}.aws.maximumpigs.com:8089' -auth admin:Administrator1!"
+    when: license_manager != inventory_hostname_short 

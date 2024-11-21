@@ -14,16 +14,26 @@
 
 # General tasks
 
+  - name: Make sure splunk folder is owned by splunk user
+    file:
+      path: /opt/splunk
+      owner: splunk
+      recurse: yes
+
+  - name: Populate service facts
+    service_facts:
+
   - name: Check if Splunkd is running
-    command: "/opt/splunk/bin/splunk status"
+    systemd_service:
+      name: Splunkd.service
+      state: started
+    check_mode: true
+    when: ansible_facts['services']['Splunkd.service']['status'] | default('not-found') != 'not-found'
     register: splunkd
 
   - name: Initialise and set boot start
     command: "/opt/splunk/bin/splunk enable boot-start -systemd-managed 1 -user splunk --accept-license --answer-yes --seed-passwd Administrator1!"
-    when: '"splunkd is not running" in splunkd.stdout'
-
-  - name: Disable Web Access
-    command: "/opt/splunk/bin/splunk disable webserver -auth admin:Administrator1!"    
+    when: ansible_facts['services']['Splunkd.service']['status'] | default('not-found') == 'not-found'
 
   - name: Add license Manager
     command: "/opt/splunk/bin/splunk edit licenser-localpeer -manager_uri 'https://{{ license_manager }}.aws.maximumpigs.com:8089'"
@@ -51,10 +61,6 @@
         manager_uri=https://splunkmgr0.aws.maximumpigs.com:8089
         pass4SymmKey = idxdiscovery1
 
-  - name: Add license Manager
-    command: "/opt/splunk/bin/splunk edit licenser-localpeer -manager_uri 'https://{{ license_manager }}.aws.maximumpigs.com:8089'"
-    when: license_manager != inventory_hostname_short
-
   - name: Join the indexer cluster
     command: "/opt/splunk/bin/splunk edit cluster-config -mode peer -manager_uri https://{{ cluster_manager }}.aws.maximumpigs.com:8089 -replication_port 9887 -cluster_label idxcluster1 -secret idxcluster1"
 
@@ -69,3 +75,7 @@
       name: Splunkd.service
       state: restarted
     when: '"splunkd is running" in splunkd.stdout'
+
+  - name: Add license Manager
+    command: "/opt/splunk/bin/splunk edit licenser-localpeer -manager_uri 'https://{{ license_manager }}.aws.maximumpigs.com:8089'"
+    when: license_manager != inventory_hostname_short    
