@@ -15,6 +15,12 @@
 
 # General tasks
 
+  - name: Make sure splunk folder is owned by splunk user
+    file:
+      path: /opt/splunk
+      owner: splunk
+      recurse: yes
+
   - name: Populate service facts
     service_facts:
 
