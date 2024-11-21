@@ -9,7 +9,6 @@
     sh_captain: "splunksh0"
   become: true
   remote_user: splunk
-  gather_facts: false
   
   tasks:
 
@@ -104,6 +103,16 @@
   - name: Restart Splunk
     command: "/opt/splunk/bin/splunk restart"
     when: splunkd.changed == false
+
+  - name: Wait for web server to be available
+    uri:
+      url: "https://localhost:8000"
+      follow_redirects: none
+      method: GET
+    register: _result
+    until: _result.status == 200
+    retries: 20
+    delay: 5
 
   - name: Add license Manager
     command: "/opt/splunk/bin/splunk edit licenser-localpeer -manager_uri 'https://{{ license_manager }}.aws.maximumpigs.com:8089' -auth admin:Administrator1!"
