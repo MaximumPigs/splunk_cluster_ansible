@@ -36,10 +36,6 @@
     command: "/opt/splunk/bin/splunk enable boot-start -systemd-managed 1 -user splunk --accept-license --answer-yes --seed-passwd Administrator1!"
     when: ansible_facts['services']['Splunkd.service']['status'] | default('not-found') == 'not-found'
 
-  - name: Add license Manager
-    command: "/opt/splunk/bin/splunk edit licenser-localpeer -manager_uri 'https://{{ license_manager }}.aws.maximumpigs.com:8089'"
-    when: license_manager != inventory_hostname_short
-
   - name: Create _webserver app
     blockinfile: 
       path: /opt/splunk/etc/apps/_webserver/default/web.conf
@@ -98,6 +94,10 @@
         pass4SymmKey = idxdiscovery1
 
 # TODO Set Deployment Server Classes
+
+  - name: Add license Manager
+    command: "/opt/splunk/bin/splunk edit licenser-localpeer -manager_uri 'https://{{ license_manager }}.aws.maximumpigs.com:8089'"
+    when: license_manager != inventory_hostname_short
 
   - name: Start Splunk
     systemd_service:
