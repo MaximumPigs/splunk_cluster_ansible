@@ -15,17 +15,20 @@
 
 # General tasks
 
+  - name: Populate service facts
+    service_facts:
+
   - name: Check if Splunkd is running
     systemd_service:
       name: Splunkd.service
       state: started
     check_mode: true
-    ignore_errors: true
+    when: ansible_facts['services']['Splunkd.service']['status'] | default('not-found') != 'not-found'
     register: splunkd
 
   - name: Initialise and set boot start
     command: "/opt/splunk/bin/splunk enable boot-start -systemd-managed 1 -user splunk --accept-license --answer-yes --seed-passwd Administrator1!"
-    when: splunkd.changed == "true" or splunkd.rc != 0
+    when: splunkd.changed == "true"
 
   - name: Set HTTPS
     command: "/opt/splunk/bin/splunk enable web-ssl -auth admin:Administrator1!"
