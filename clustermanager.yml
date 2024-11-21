@@ -95,7 +95,7 @@
     systemd_service:
       name: Splunkd.service
       state: started
-    when: splunkd.changed == "true"
+    when: splunkd.changed == "true" or ansible_facts['services']['Splunkd.service']['status'] | default('not-found') == 'not-found'
 
   - name: Restart Splunk
     systemd_service:
