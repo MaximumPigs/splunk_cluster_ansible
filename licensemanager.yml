@@ -9,6 +9,7 @@
     sh_captain: "splunksh0"
   become: true
   remote_user: splunk
+  gather_facts: false
 
   tasks:
 
