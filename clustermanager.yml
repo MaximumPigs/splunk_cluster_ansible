@@ -9,6 +9,7 @@
     sh_captain: "splunksh0"
   become: true
   remote_user: splunk
+  gather_facts: false
   
   tasks:
 
@@ -24,7 +25,7 @@
 
   - name: Initialise and set boot start
     command: "/opt/splunk/bin/splunk enable boot-start -systemd-managed 1 -user splunk --accept-license --answer-yes --seed-passwd Administrator1!"
-    when: splunkd.changed == "true" OR splunkd.rc != 0
+    when: splunkd.changed == "true" or splunkd.rc != 0
 
   - name: Set HTTPS
     command: "/opt/splunk/bin/splunk enable web-ssl -auth admin:Administrator1!"
