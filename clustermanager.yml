@@ -64,9 +64,6 @@
 
 # Node specific tasks
 
-  - name: Configure indexer clustering
-    command: "/opt/splunk/bin/splunk edit cluster-config -mode manager -replication_factor 2 -search_factor 2 -secret idxcluster1 -cluster_label idxcluster1" 
-
 ## Configure Indexer Discovery
 
   - name: Create server.conf in cm_idx_discovery_base/default
@@ -109,4 +106,7 @@
 
   - name: Add license Manager
     command: "/opt/splunk/bin/splunk edit licenser-localpeer -manager_uri 'https://{{ license_manager }}.aws.maximumpigs.com:8089'"
-    when: license_manager != inventory_hostname_short    
+    when: license_manager != inventory_hostname_short
+
+  - name: Configure indexer clustering
+    command: "/opt/splunk/bin/splunk edit cluster-config -mode manager -replication_factor 2 -search_factor 2 -secret idxcluster1 -cluster_label idxcluster1" 
