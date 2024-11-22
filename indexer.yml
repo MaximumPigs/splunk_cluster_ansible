@@ -37,9 +37,9 @@
 
 # Node Specific Tasks
 
-  - name: Create _idx_cluster App
+  - name: Configure Indexer Clustering
     blockinfile: 
-      path: /opt/splunk/etc/apps/_idx_cluster/default/server.conf
+      path: /opt/splunk/etc/system/local/server.conf
       create: true
       mode: '0655'
       owner: 'splunk'
