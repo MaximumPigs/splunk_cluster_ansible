@@ -113,7 +113,7 @@
     when: license.changed == true
 
   - name: Add license
-    command: "/opt/splunk/bin/splunk add licenses /opt/splunk.license"
+    command: "/opt/splunk/bin/splunk add licenses /opt/splunk.license -auth admin:Administrator1!"
     when: license.changed == true
 
   - name: Restart Splunk
