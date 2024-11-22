@@ -96,6 +96,12 @@
 
 # Node specific tasks
 
+  - name: Make sure splunk folder is owned by splunk user
+    file:
+      path: /opt/splunk
+      owner: splunk
+      recurse: yes
+
   - name: Start Splunk
     command: "/opt/splunk/bin/splunk start"
     when: splunkd.changed == true or ansible_facts['services']['Splunkd.service']['status'] | default('not-found') == 'not-found'

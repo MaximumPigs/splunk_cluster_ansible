@@ -120,6 +120,12 @@
         manager_uri = https://{{ license_manager }}.aws.maximumpigs.com:0899
 
 # TODO Set Deployment Server Classes
+  
+  - name: Make sure splunk folder is owned by splunk user
+    file:
+      path: /opt/splunk
+      owner: splunk
+      recurse: yes
 
   - name: Start Splunk
     command: "/opt/splunk/bin/splunk start"

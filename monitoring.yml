@@ -11,7 +11,7 @@
   remote_user: splunk
   
   tasks:
-  
+
 # General tasks
 
   - name: Make sure splunk folder is owned by splunk user
@@ -120,11 +120,17 @@
       prepend_newline: true
       block: |
         [distributedSearch]
-        servers = https://splunkmgr10.aws.maximumpigs.com:8089
+        servers = https://splunkmgr0.aws.maximumpigs.com:8089
 
 # TODO - Enable distributed monitoring
 
 # TODO - Set server roles
+
+  - name: Make sure splunk folder is owned by splunk user
+    file:
+      path: /opt/splunk
+      owner: splunk
+      recurse: yes
 
   - name: Start Splunk
     command: "/opt/splunk/bin/splunk start"

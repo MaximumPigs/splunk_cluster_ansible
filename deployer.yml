@@ -95,6 +95,19 @@
 
 # Node specific tasks
 
+  - name: Create _shclustering app
+    command: "/opt/splunk/bin/splunk edit shcluster-config -secret shcluster1 -shcluster_label shcluster1"
+    blockinfile: 
+      path: /opt/splunk/etc/shcluster/apps/_shclustering/default/server.conf
+      create: true
+      mode: '0655'
+      owner: 'splunk'
+      prepend_newline: true
+      block: |
+        [shclustering]
+        shcluster_label = shcluster1
+        pass4SymmKey = shcluster1
+
   - name: Stage _index_and_forward app
     blockinfile: 
       path: /opt/splunk/etc/shcluster/apps/_index_and_forward/default/outputs.conf
@@ -117,23 +130,17 @@
         manager_uri=https://{{ cluster_manager }}.aws.maximumpigs.com:8089
         pass4SymmKey = idxdiscovery1
 
-  - name: Stage _indexes app
-    copy:
-      remote_src: yes
-      src: /opt/splunk/etc/apps/_indexes
-      dest: /opt/splunk/etc/shcluster/apps/
-
   - name: Stage _license app
     copy:
       remote_src: yes
       src: /opt/splunk/etc/apps/_license
       dest: /opt/splunk/etc/shcluster/apps/
 
-## TODO - Modify deployment server with repositoryLocation = SPLUNK_HOME/etc/manager-apps and serverRepositoryLocationPolicy = rejectAlways
-
-## TODO - Change this because CLI doesn't work. SED server.conf
-  - name: Configure the deployer for SH Clustering
-    command: "/opt/splunk/bin/splunk edit shcluster-config -secret shcluster1 -shcluster_label shcluster1"
+  - name: Make sure splunk folder is owned by splunk user
+    file:
+      path: /opt/splunk
+      owner: splunk
+      recurse: yes
 
   - name: Start Splunk
     command: "/opt/splunk/bin/splunk start"
