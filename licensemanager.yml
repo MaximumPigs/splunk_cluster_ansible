@@ -47,9 +47,9 @@
         [settings]
         enableSplunkWebSSL = true
 
-  - name: Create _indexandforward app
+  - name: Create Index and Forward app
     blockinfile: 
-      path: /opt/splunk/etc/apps/_indexandforward/default/outputs.conf
+      path: /opt/splunk/etc/apps/_index_and_forward/default/outputs.conf
       create: true
       mode: '0655'
       owner: 'splunk'
@@ -66,8 +66,20 @@
         indexerDiscovery = idxdiscovery1
 
         [indexer_discovery:idxdiscovery1]
-        manager_uri=https://splunkmgr0.aws.maximumpigs.com:8089
+        manager_uri=https://{{ cluster_manager }}.aws.maximumpigs.com:8089
         pass4SymmKey = idxdiscovery1  
+
+  - name: Create License App
+    blockinfile: 
+      path: /opt/splunk/etc/apps/_license/default/server.conf
+      create: true
+      mode: '0655'
+      owner: 'splunk'
+      prepend_newline: true
+      block: |
+        [license]
+        manager_uri = https://{{ license_manager }}.aws.maximumpigs.com:0899
+    when: license_manager != inventory_hostname_short
 
 # Node specific tasks
 
@@ -79,6 +91,15 @@
     command: "/opt/splunk/bin/splunk restart"
     when: splunkd.changed == false
 
+  - name: Check for existing license
+    lineinfile:
+      path: /opt/splunk/etc/system/local/server.conf
+      line: '[license]'
+      state: present
+    check_mode: yes
+    ignore_errors: yes
+    register: license
+
   - name: Wait for web server to be available
     uri:
       url: "https://localhost:8000"
@@ -89,16 +110,12 @@
     until: _result.status == 200
     retries: 20
     delay: 5
-
-  - name: Check for existing license
-    lineinfile:
-      path: /opt/splunk/etc/system/local/server.conf
-      line: '[license]'
-      state: present
-    check_mode: yes
-    ignore_errors: yes
-    register: license
+    when: license.changed == true
 
   - name: Add license
     command: "/opt/splunk/bin/splunk add licenses /opt/splunk.license"
+    when: license.changed == true
+
+  - name: Restart Splunk
+    command: "/opt/splunk/bin/splunk restart"
     when: license.changed == true
