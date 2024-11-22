@@ -97,7 +97,7 @@
 
   - name: Stage License App
     blockinfile: 
-      path: /opt/splunk/etc/apps/_license/default/server.conf
+      path: /opt/splunk/etc/deployment-apps/_license/default/server.conf
       create: true
       mode: '0655'
       owner: 'splunk'

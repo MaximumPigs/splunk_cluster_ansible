@@ -97,7 +97,7 @@
 
 ## Configure Cluster
 
-  - name: Create server.conf in _cm_indexer_cluster/default
+  - name: Create server.conf in _cm_indexer_cluster app
     blockinfile: 
       path: /opt/splunk/etc/apps/_cm_indexer_cluster/default/server.conf
       create: true
@@ -131,7 +131,7 @@
 
   - name: Create _idx_webserver app
     blockinfile: 
-      path: /opt/splunk/etc/apps/_idx_webserver/default/web.conf
+      path: /opt/splunk/etc/manager-apps/_idx_webserver/default/web.conf
       create: true
       mode: '0655'
       owner: 'splunk'
@@ -144,13 +144,16 @@
 
   - name: Create _idx_indexes app
     blockinfile: 
-      path: /opt/splunk/etc/apps/_idx_indexes/default/indexes.conf
+      path: /opt/splunk/etc/manager-apps/_idx_indexes/default/indexes.conf
       create: true
       mode: '0655'
       owner: 'splunk'
       prepend_newline: true
       block: |
         [testindex]
+
+  - name: Apply Cluster Bundle
+    command: "/opt/splunk/bin/splunk apply cluster-bundle -auth admin:Administrator1!"
 
   - name: Start Splunk
     command: "/opt/splunk/bin/splunk start"
@@ -170,7 +173,4 @@
     until: _result.status == 200
     retries: 20
     delay: 5
-
-  - name: Apply Cluster Bundle
-    command: "/opt/splunk/bin/splunk apply cluster-bundle -auth admin:Administrator1!"
     

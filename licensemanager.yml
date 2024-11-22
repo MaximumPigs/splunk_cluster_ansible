@@ -119,3 +119,14 @@
   - name: Restart Splunk
     command: "/opt/splunk/bin/splunk restart"
     when: license.changed == true
+
+  - name: Wait for web server to be available
+    uri:
+      url: "https://localhost:8000"
+      follow_redirects: all
+      method: GET
+      validate_certs: false
+    register: _result
+    until: _result.status == 200
+    retries: 20
+    delay: 5    
