@@ -111,17 +111,6 @@
         manager_uri = https://{{ cluster_manager }}.aws.maximumpigs.com:8089
         pass4SymmKey = idxcluster1
 
-  - name: Create _distsearch app
-    blockinfile: 
-      path: /opt/splunk/etc/apps/_distsearch/default/distsearch.conf
-      create: true
-      mode: '0655'
-      owner: 'splunk'
-      prepend_newline: true
-      block: |
-        [distributedSearch]
-        servers = \"https://splunkmgr0.aws.maximumpigs.com:8089, https://splunksh0.aws.maximumpigs.com:8089, https://splunksh1.aws.maximumpigs.com:8089, https://splunksh2.aws.maximumpigs.com:8089\"
-
 # TODO - Enable distributed monitoring
 
 # TODO - Set server roles
@@ -150,3 +139,17 @@
     until: _result.status == 200
     retries: 20
     delay: 5
+
+# Must be done here because of sh cluster automatic creation of /etc/local/distsearch.conf
+
+  - name: Add MGR0 as peer
+    command: "splunk add search-server https://splunkmgr0.aws.maximumpigs.com:8089 -auth admin:Administrator1! -remoteUsername admin -remotePassword Administrator1!"
+
+  - name: Add SH0 as peer
+    command: "splunk add search-server https://splunksh0.aws.maximumpigs.com:8089 -auth admin:Administrator1! -remoteUsername admin -remotePassword Administrator1!"
+
+  - name: Add SH1 as peer
+    command: "splunk add search-server https://splunksh1.aws.maximumpigs.com:8089 -auth admin:Administrator1! -remoteUsername admin -remotePassword Administrator1!"
+
+  - name: Add SH2 as peer
+    command: "splunk add search-server https://splunksh2.aws.maximumpigs.com:8089 -auth admin:Administrator1! -remoteUsername admin -remotePassword Administrator1!"
