@@ -35,34 +35,46 @@
     command: "/opt/splunk/bin/splunk enable boot-start -systemd-managed 1 -user splunk --accept-license --answer-yes --seed-passwd Administrator1!"
     when: ansible_facts['services']['Splunkd.service']['status'] | default('not-found') == 'not-found'
 
-  - name: Add license Manager
-    command: "/opt/splunk/bin/splunk edit licenser-localpeer -manager_uri 'https://{{ license_manager }}.aws.maximumpigs.com:8089'"
-    when: license_manager != inventory_hostname_short
-
-  - name: Create Index and Forward App
+  - name: Create _license App
     blockinfile: 
-      path: /opt/splunk/etc/apps/index_and_forward/default/outputs.conf
+      path: /opt/splunk/etc/apps/_license/default/server.conf
       create: true
       mode: '0655'
       owner: 'splunk'
       prepend_newline: true
       block: |
-        [indexAndForward]
-        index = false
+        [license]
+        manager_uri = https://{{ license_manager }}.aws.maximumpigs.com:0899
+    when: license_manager != inventory_hostname_short
 
-        [tcpout]
-        defaultGroup = discovery-group
-        indexAndForward = false
+  - name: Create _webserver app
+    blockinfile: 
+      path: /opt/splunk/etc/apps/_webserver/default/web.conf
+      create: true
+      mode: '0655'
+      owner: 'splunk'
+      prepend_newline: true
+      block: |
+        [settings]
+        startwebserver = 0
 
-        [tcpout:discovery-group]
-        indexerDiscovery = idxdiscovery1
+# Node Specific Tasks
 
-        [indexer_discovery:idxdiscovery1]
-        manager_uri=https://splunkmgr0.aws.maximumpigs.com:8089
-        pass4SymmKey = idxdiscovery1
+  - name: Create _idx_cluster App
+    blockinfile: 
+      path: /opt/splunk/etc/apps/_idx_cluster/default/server.conf
+      create: true
+      mode: '0655'
+      owner: 'splunk'
+      prepend_newline: true
+      block: |
+        [clustering]
+        mode = peer
+        cluster_label = idxcluster1
+        manager_uri = https://{{ cluster_manager }}.aws.maximumpigs.com:8089
+        pass4SymmKey = idxcluster1
 
-  - name: Join the indexer cluster
-    command: "/opt/splunk/bin/splunk edit cluster-config -mode peer -manager_uri https://{{ cluster_manager }}.aws.maximumpigs.com:8089 -replication_port 9887 -cluster_label idxcluster1 -secret idxcluster1"
+        [replication_port://9887]
 
   - name: Start Splunk
     systemd_service:
@@ -75,7 +87,3 @@
       name: Splunkd.service
       state: restarted
     when: '"splunkd is running" in splunkd.stdout'
-
-  - name: Add license Manager
-    command: "/opt/splunk/bin/splunk edit licenser-localpeer -manager_uri 'https://{{ license_manager }}.aws.maximumpigs.com:8089'"
-    when: license_manager != inventory_hostname_short    

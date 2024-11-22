@@ -46,7 +46,7 @@
         [settings]
         enableSplunkWebSSL = true
 
-  - name: Create Index and Forward app
+  - name: Create _index_and_forward app
     blockinfile: 
       path: /opt/splunk/etc/apps/_index_and_forward/default/outputs.conf
       create: true
@@ -68,7 +68,7 @@
         manager_uri=https://{{ cluster_manager }}.aws.maximumpigs.com:8089
         pass4SymmKey = idxdiscovery1  
 
-  - name: Create License App
+  - name: Create _license App
     blockinfile: 
       path: /opt/splunk/etc/apps/_license/default/server.conf
       create: true
