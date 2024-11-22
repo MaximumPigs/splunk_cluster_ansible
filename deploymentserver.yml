@@ -96,10 +96,15 @@
       dest: /opt/splunk/etc/deployment-apps/
 
   - name: Stage License App
-    copy:
-      remote_src: yes
-      src: /opt/splunk/etc/apps/_license
-      dest: /opt/splunk/etc/deployment-apps/
+    blockinfile: 
+      path: /opt/splunk/etc/apps/_license/default/server.conf
+      create: true
+      mode: '0655'
+      owner: 'splunk'
+      prepend_newline: true
+      block: |
+        [license]
+        manager_uri = https://{{ license_manager }}.aws.maximumpigs.com:0899
 
 # TODO Set Deployment Server Classes
 
