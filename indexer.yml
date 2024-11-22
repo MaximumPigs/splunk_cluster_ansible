@@ -77,13 +77,9 @@
         [replication_port://9887]
 
   - name: Start Splunk
-    systemd_service:
-      name: Splunkd.service
-      state: started
-    when: '"splunkd is not running" in splunkd.stdout' 
+    command: "/opt/splunk/bin/splunk start"
+    when: splunkd.changed == true or ansible_facts['services']['Splunkd.service']['status'] | default('not-found') == 'not-found'
 
   - name: Restart Splunk
-    systemd_service:
-      name: Splunkd.service
-      state: restarted
-    when: '"splunkd is running" in splunkd.stdout'
+    command: "/opt/splunk/bin/splunk restart"
+    when: splunkd.changed == false
