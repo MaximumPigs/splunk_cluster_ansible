@@ -65,7 +65,7 @@
         indexerDiscovery = idxdiscovery1
 
         [indexer_discovery:idxdiscovery1]
-        manager_uri=https://{{ cluster_manager }}.aws.maximumpigs.com:8089
+        manager_uri= https://{{ cluster_manager }}.aws.maximumpigs.com:8089
         pass4SymmKey = idxdiscovery1  
 
   - name: Create _license App
@@ -153,9 +153,20 @@
         [settings]
         startwebserver = 0
 
+  - name: Stage _license App
+    blockinfile: 
+      path: /opt/splunk/etc/manager-apps/_license/default/server.conf
+      create: true
+      mode: '0655'
+      owner: 'splunk'
+      prepend_newline: true
+      block: |
+        [license]
+        manager_uri = https://{{ license_manager }}.aws.maximumpigs.com:8089        
+
 ### Stage _idx_indexes app
 
-  - name: Create _idx_indexes app
+  - name: Stage _idx_indexes app
     blockinfile: 
       path: /opt/splunk/etc/manager-apps/_idx_indexes/default/indexes.conf
       create: true

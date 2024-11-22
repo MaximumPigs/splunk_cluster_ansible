@@ -97,7 +97,7 @@
 
   - name: Create _shclustering app
     blockinfile: 
-      path: /opt/splunk/etc/shcluster/apps/_shclustering/default/server.conf
+      path: /opt/splunk/etc/apps/_shclustering/default/server.conf
       create: true
       mode: '0655'
       owner: 'splunk'
@@ -107,27 +107,17 @@
         shcluster_label = shcluster1
         pass4SymmKey = shcluster1
 
-  - name: Stage _index_and_forward app
-    blockinfile: 
-      path: /opt/splunk/etc/shcluster/apps/_index_and_forward/default/outputs.conf
-      create: true
-      mode: '0655'
-      owner: 'splunk'
-      prepend_newline: true
-      block: |
-        [indexAndForward]
-        index = false
+  - name: Stage _webserver app
+    copy:
+      remote_src: yes
+      src: /opt/splunk/etc/shcluster/apps/_webserver
+      dest: /opt/splunk/etc/deployment-apps/
 
-        [tcpout]
-        defaultGroup = discovery-group
-        indexAndForward = false
-
-        [tcpout:discovery-group]
-        indexerDiscovery = idxdiscovery1
-
-        [indexer_discovery:idxdiscovery1]
-        manager_uri=https://{{ cluster_manager }}.aws.maximumpigs.com:8089
-        pass4SymmKey = idxdiscovery1
+  - name: Stage _index_and_forward App
+    copy:
+      remote_src: yes
+      src: /opt/splunk/etc/shcluster/apps/_index_and_forward
+      dest: /opt/splunk/etc/deployment-apps/
 
   - name: Stage _license App
     blockinfile: 
@@ -139,6 +129,22 @@
       block: |
         [license]
         manager_uri = https://{{ license_manager }}.aws.maximumpigs.com:8089
+
+  - name: Stage _indexer_cluster app
+    blockinfile: 
+      path: /opt/splunk/etc/shcluster/apps/_indexer_cluster/default/server.conf
+      create: true
+      mode: '0655'
+      owner: 'splunk'
+      prepend_newline: true
+      block: |
+        [clustering]
+        mode = searchhead
+        cluster_label = idxcluster1
+        manager_uri = https://{{ cluster_manager }}.aws.maximumpigs.com:8089
+        pass4SymmKey = idxcluster1
+
+# Restart
 
   - name: Make sure splunk folder is owned by splunk user
     file:

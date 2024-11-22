@@ -35,29 +35,6 @@
     command: "/opt/splunk/bin/splunk enable boot-start -systemd-managed 1 -user splunk --accept-license --answer-yes --seed-passwd Administrator1!"
     when: ansible_facts['services']['Splunkd.service']['status'] | default('not-found') == 'not-found'
 
-  - name: Create _license App
-    blockinfile: 
-      path: /opt/splunk/etc/apps/_license/default/server.conf
-      create: true
-      mode: '0655'
-      owner: 'splunk'
-      prepend_newline: true
-      block: |
-        [license]
-        manager_uri = https://{{ license_manager }}.aws.maximumpigs.com:0899
-    when: license_manager != inventory_hostname_short
-
-  - name: Create _webserver app
-    blockinfile: 
-      path: /opt/splunk/etc/apps/_webserver/default/web.conf
-      create: true
-      mode: '0655'
-      owner: 'splunk'
-      prepend_newline: true
-      block: |
-        [settings]
-        startwebserver = 0
-
 # Node Specific Tasks
 
   - name: Create _idx_cluster App
