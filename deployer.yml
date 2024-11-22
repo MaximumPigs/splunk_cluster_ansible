@@ -96,7 +96,6 @@
 # Node specific tasks
 
   - name: Create _shclustering app
-    command: "/opt/splunk/bin/splunk edit shcluster-config -secret shcluster1 -shcluster_label shcluster1"
     blockinfile: 
       path: /opt/splunk/etc/shcluster/apps/_shclustering/default/server.conf
       create: true
