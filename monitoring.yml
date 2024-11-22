@@ -10,6 +10,8 @@
   become: true
   remote_user: splunk
   
+  tasks:
+  
 # General tasks
 
   - name: Make sure splunk folder is owned by splunk user
