@@ -46,9 +46,9 @@
         [settings]
         enableSplunkWebSSL = true
 
-  - name: Create a_indexandforward app
+  - name: Create Index and Forward app
     blockinfile: 
-      path: /opt/splunk/etc/apps/_indexandforward/default/outputs.conf
+      path: /opt/splunk/etc/apps/_index_and_forward/default/outputs.conf
       create: true
       mode: '0655'
       owner: 'splunk'
@@ -65,16 +65,28 @@
         indexerDiscovery = idxdiscovery1
 
         [indexer_discovery:idxdiscovery1]
-        manager_uri=https://splunkmgr0.aws.maximumpigs.com:8089
+        manager_uri=https://{{ cluster_manager }}.aws.maximumpigs.com:8089
         pass4SymmKey = idxdiscovery1  
+
+  - name: Create License App
+    blockinfile: 
+      path: /opt/splunk/etc/apps/_license/default/server.conf
+      create: true
+      mode: '0655'
+      owner: 'splunk'
+      prepend_newline: true
+      block: |
+        [license]
+        manager_uri = https://{{ license_manager }}.aws.maximumpigs.com:0899
+    when: license_manager != inventory_hostname_short
 
 # Node specific tasks
 
 ## Configure Indexer Discovery
 
-  - name: Create server.conf in cm_idx_discovery_base/default
+  - name: Create _cm_indexer_discovery app
     blockinfile: 
-      path: /opt/splunk/etc/apps/cm_idx_discovery_base/default/server.conf
+      path: /opt/splunk/etc/apps/_cm_indexer_discovery/default/server.conf
       create: true
       mode: '0655'
       owner: 'splunk'
@@ -83,11 +95,30 @@
         [indexer_discovery]
         pass4SymmKey = idxdiscovery1
 
-## Add inputs app - listen on 9997
+## Configure Cluster
 
-  - name: Create inputs.conf in idx_inputs_base/default
+  - name: Create server.conf in _cm_indexer_cluster/default
     blockinfile: 
-      path: /opt/splunk/etc/manager-apps/idx_inputs_base/default/inputs.conf
+      path: /opt/splunk/etc/apps/_cm_indexer_cluster/default/server.conf
+      create: true
+      mode: '0655'
+      owner: 'splunk'
+      prepend_newline: true
+      block: |
+        [clustering]
+        mode = manager
+        cluster_label = idxcluster1
+        pass4SymmKey = idxcluster1
+        search_factor = 2
+        replication_factor = 2
+
+# Configuration Manager Apps
+
+## Stage _idx_inputs app
+
+  - name: Stage _idx_inputs
+    blockinfile: 
+      path: /opt/splunk/etc/manager-apps/_idx_inputs/default/inputs.conf
       create: true
       mode: '0655'
       owner: 'splunk'
@@ -96,17 +127,30 @@
         [splunktcp://9997]
         disabled = 0
 
-### Disable webserver on indexers
-  - name: Create _webserver app
+### Stage _idx_webserver app
+
+  - name: Create _idx_webserver app
     blockinfile: 
-      path: /opt/splunk/etc/apps/idx_disable_webserver/default/web.conf
+      path: /opt/splunk/etc/apps/_idx_webserver/default/web.conf
       create: true
       mode: '0655'
       owner: 'splunk'
       prepend_newline: true
       block: |
         [settings]
-        startwebserver = 0         
+        startwebserver = 0
+
+### Stage _idx_indexes app
+
+  - name: Create _idx_indexes app
+    blockinfile: 
+      path: /opt/splunk/etc/apps/_idx_indexes/default/indexes.conf
+      create: true
+      mode: '0655'
+      owner: 'splunk'
+      prepend_newline: true
+      block: |
+        [testindex]
 
   - name: Start Splunk
     command: "/opt/splunk/bin/splunk start"
@@ -127,12 +171,6 @@
     retries: 20
     delay: 5
 
-  - name: Add license Manager
-    command: "/opt/splunk/bin/splunk edit licenser-localpeer -manager_uri 'https://{{ license_manager }}.aws.maximumpigs.com:8089' -auth admin:Administrator1!"
-    when: license_manager != inventory_hostname_short
-
-  - name: Configure indexer clustering
-    command: "/opt/splunk/bin/splunk edit cluster-config -mode manager -replication_factor 2 -search_factor 2 -secret idxcluster1 -cluster_label idxcluster1"
-
   - name: Apply Cluster Bundle
+    command: "/opt/splunk/bin/splunk apply cluster-bundle -auth admin:Administrator1!"
     
