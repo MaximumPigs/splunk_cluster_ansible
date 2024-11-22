@@ -186,9 +186,3 @@
     until: _result.status == 200
     retries: 20
     delay: 5
-
-  - name: Stage Cluster Bundle
-    command: "/opt/splunk/bin/splunk apply shcluster-bundle -action stage --answer-yes -auth admin:Administrator1!"
-
-  - name: Deploy Cluster Bundle
-    command: "/opt/splunk/bin/splunk apply shcluster-bundle -action send -target https://{{ sh_captain }}.aws.maximumpigs.com:8089  --answer-yes"    

@@ -1,6 +1,6 @@
 ---
 - name: Configure Cluster Manager
-  hosts: manager0
+  hosts: splunksh0
   vars:
     license_manager: "splunkmgr1"
     deployment_server: "splunkmgr1"
@@ -11,13 +11,20 @@
   remote_user: splunk
   
   tasks:
-  - name: Wait for web server to be available
-    uri:
-      url: "https://localhost:8000"
-      follow_redirects: all
-      method: GET
-      validate_certs: false
-    register: _result
-    until: _result.status == 200
-    retries: 20
-    delay: 5
+  - name: Create _shclustering app
+    blockinfile: 
+      path: /opt/splunk/etc/apps/_shclustering/default/server.conf
+      create: true
+      mode: '0655'
+      owner: 'splunk'
+      prepend_newline: true
+      block: |
+        [shclustering]
+        disabled = 0
+        shcluster_label = shcluster1
+        mgmt_uri = https://{{ inventory_hostname_short }}.aws.maximumpigs.com:8089
+        replication_factor = 2
+        conf_deploy_fetch_url = https://{{ deployer }}.aws.maximumpigs.com:8089
+        pass4SymmKey = shcluster1
+
+        [replication_port://9200]
