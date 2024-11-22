@@ -120,7 +120,7 @@
       prepend_newline: true
       block: |
         [distributedSearch]
-        servers = https://splunkmgr0.aws.maximumpigs.com:8089, https://splunksh0.aws.maximumpigs.com:8089, https://splunksh1.aws.maximumpigs.com:8089, https://splunksh2.aws.maximumpigs.com:8089
+        servers = \"https://splunkmgr0.aws.maximumpigs.com:8089, https://splunksh0.aws.maximumpigs.com:8089, https://splunksh1.aws.maximumpigs.com:8089, https://splunksh2.aws.maximumpigs.com:8089\"
 
 # TODO - Enable distributed monitoring
 
