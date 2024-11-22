@@ -78,24 +78,37 @@
       prepend_newline: true
       block: |
         [license]
-        manager_uri = https://{{ license_manager }}.aws.maximumpigs.com:0899
+        manager_uri = https://{{ license_manager }}.aws.maximumpigs.com:8089
     when: license_manager != inventory_hostname_short
+
+  - name: Create _deploymentclient app
+    blockinfile: 
+      path: /opt/splunk/etc/apps/_deploymentclient/default/deploymentclient.conf
+      create: true
+      mode: '0655'
+      owner: 'splunk'
+      prepend_newline: true
+      block: |
+        [deployment-client]
+
+        [target-broker:deploymentServer]
+        targetUri = deploymentserver.splunk.mycompany.com:8089
 
 # Node specific tasks
 
-  - name: Stage Web Server app
+  - name: Stage _webserver app
     copy:
       remote_src: yes
       src: /opt/splunk/etc/apps/_webserver
       dest: /opt/splunk/etc/deployment-apps/
 
-  - name: Stage Index and Forward App
+  - name: Stage _index_and_forward App
     copy:
       remote_src: yes
       src: /opt/splunk/etc/apps/_index_and_forward
       dest: /opt/splunk/etc/deployment-apps/
 
-  - name: Stage License App
+  - name: Stage _license App
     blockinfile: 
       path: /opt/splunk/etc/deployment-apps/_license/default/server.conf
       create: true

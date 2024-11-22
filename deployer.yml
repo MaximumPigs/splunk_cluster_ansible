@@ -46,9 +46,9 @@
         [settings]
         enableSplunkWebSSL = true
 
-  - name: Create a_indexandforward app
+  - name: Create _index_and_forward app
     blockinfile: 
-      path: /opt/splunk/etc/apps/_indexandforward/default/outputs.conf
+      path: /opt/splunk/etc/apps/_index_and_forward/default/outputs.conf
       create: true
       mode: '0655'
       owner: 'splunk'
@@ -65,14 +65,39 @@
         indexerDiscovery = idxdiscovery1
 
         [indexer_discovery:idxdiscovery1]
-        manager_uri=https://splunkmgr0.aws.maximumpigs.com:8089
+        manager_uri=https://{{ cluster_manager }}.aws.maximumpigs.com:8089
         pass4SymmKey = idxdiscovery1  
+
+  - name: Create _license App
+    blockinfile: 
+      path: /opt/splunk/etc/apps/_license/default/server.conf
+      create: true
+      mode: '0655'
+      owner: 'splunk'
+      prepend_newline: true
+      block: |
+        [license]
+        manager_uri = https://{{ license_manager }}.aws.maximumpigs.com:8089
+    when: license_manager != inventory_hostname_short
+
+  - name: Create _deploymentclient app
+    blockinfile: 
+      path: /opt/splunk/etc/apps/_deploymentclient/default/deploymentclient.conf
+      create: true
+      mode: '0655'
+      owner: 'splunk'
+      prepend_newline: true
+      block: |
+        [deployment-client]
+
+        [target-broker:deploymentServer]
+        targetUri = deploymentserver.splunk.mycompany.com:8089
 
 # Node specific tasks
 
-  - name: Stage Index and Forward App
+  - name: Stage _index_and_forward app
     blockinfile: 
-      path: /opt/splunk/etc/shcluster/apps/index_and_forward/default/outputs.conf
+      path: /opt/splunk/etc/shcluster/apps/_index_and_forward/default/outputs.conf
       create: true
       mode: '0655'
       owner: 'splunk'
@@ -89,8 +114,20 @@
         indexerDiscovery = idxdiscovery1
 
         [indexer_discovery:idxdiscovery1]
-        manager_uri=https://splunkmgr0.aws.maximumpigs.com:8089
+        manager_uri=https://{{ cluster_manager }}.aws.maximumpigs.com:8089
         pass4SymmKey = idxdiscovery1
+
+  - name: Stage _indexes app
+    copy:
+      remote_src: yes
+      src: /opt/splunk/etc/apps/_indexes
+      dest: /opt/splunk/etc/shcluster/apps/
+
+  - name: Stage _license app
+    copy:
+      remote_src: yes
+      src: /opt/splunk/etc/apps/_license
+      dest: /opt/splunk/etc/shcluster/apps/
 
 ## TODO - Modify deployment server with repositoryLocation = SPLUNK_HOME/etc/manager-apps and serverRepositoryLocationPolicy = rejectAlways
 
@@ -115,11 +152,4 @@
     register: _result
     until: _result.status == 200
     retries: 20
-    delay: 5
-
-  - name: Add license Manager
-    command: "/opt/splunk/bin/splunk edit licenser-localpeer -manager_uri 'https://{{ license_manager }}.aws.maximumpigs.com:8089' -auth admin:Administrator1!"
-    when: license_manager != inventory_hostname_short 
-
-  - name: Apply the Cluster Bundle
-    command: "/opt/splunk/bin/splunk apply shcluster-bundle --answer-yes"    
+    delay: 5 
