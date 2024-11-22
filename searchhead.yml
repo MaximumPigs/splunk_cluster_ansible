@@ -82,9 +82,9 @@
 
 # Node specific tasks
 
-  - name: Create _shclustering app
+  - name: Configure SH Cluster
     blockinfile: 
-      path: /opt/splunk/etc/apps/_shclustering/default/server.conf
+      path: /opt/splunk/etc/system/local/server.conf
       create: true
       mode: '0655'
       owner: 'splunk'
