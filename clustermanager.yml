@@ -152,9 +152,6 @@
       block: |
         [testindex]
 
-  - name: Apply Cluster Bundle
-    command: "/opt/splunk/bin/splunk apply cluster-bundle -auth admin:Administrator1!"
-
   - name: Start Splunk
     command: "/opt/splunk/bin/splunk start"
     when: splunkd.changed == true or ansible_facts['services']['Splunkd.service']['status'] | default('not-found') == 'not-found'
