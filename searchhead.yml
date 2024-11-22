@@ -14,13 +14,26 @@
 
 # General tasks
 
+  - name: Make sure splunk folder is owned by splunk user
+    file:
+      path: /opt/splunk
+      owner: splunk
+      recurse: yes
+
+  - name: Populate service facts
+    service_facts:
+
   - name: Check if Splunkd is running
-    command: "/opt/splunk/bin/splunk status"
+    systemd_service:
+      name: Splunkd.service
+      state: started
+    check_mode: true
+    when: ansible_facts['services']['Splunkd.service']['status'] | default('not-found') != 'not-found'
     register: splunkd
 
   - name: Initialise and set boot start
     command: "/opt/splunk/bin/splunk enable boot-start -systemd-managed 1 -user splunk --accept-license --answer-yes --seed-passwd Administrator1!"
-    when: '"splunkd is not running" in splunkd.stdout'
+    when: ansible_facts['services']['Splunkd.service']['status'] | default('not-found') == 'not-found'
 
 # Node specific tasks
 
