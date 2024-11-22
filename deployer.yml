@@ -110,14 +110,14 @@
   - name: Stage _webserver app
     copy:
       remote_src: yes
-      src: /opt/splunk/etc/shcluster/apps/_webserver
-      dest: /opt/splunk/etc/deployment-apps/
+      src: /opt/splunk/etc/apps/_webserver
+      dest: /opt/splunk/etc/shcluster/apps/
 
   - name: Stage _index_and_forward App
     copy:
       remote_src: yes
-      src: /opt/splunk/etc/shcluster/apps/_index_and_forward
-      dest: /opt/splunk/etc/deployment-apps/
+      src: /opt/splunk/etc/apps/_index_and_forward
+      dest: /opt/splunk/etc/shcluster/apps/
 
   - name: Stage _license App
     blockinfile: 
