@@ -47,9 +47,9 @@
         [settings]
         enableSplunkWebSSL = true
 
-  - name: Create _indexandforward app
+  - name: Create Index and Forward app
     blockinfile: 
-      path: /opt/splunk/etc/apps/_indexandforward/default/outputs.conf
+      path: /opt/splunk/etc/apps/_index_and_forward/default/outputs.conf
       create: true
       mode: '0655'
       owner: 'splunk'
@@ -66,32 +66,40 @@
         indexerDiscovery = idxdiscovery1
 
         [indexer_discovery:idxdiscovery1]
-        manager_uri=https://splunkmgr0.aws.maximumpigs.com:8089
+        manager_uri=https://{{ cluster_manager }}.aws.maximumpigs.com:8089
         pass4SymmKey = idxdiscovery1  
+
+  - name: Create License App
+    blockinfile: 
+      path: /opt/splunk/etc/apps/_license/default/server.conf
+      create: true
+      mode: '0655'
+      owner: 'splunk'
+      prepend_newline: true
+      block: |
+        [license]
+        manager_uri = https://{{ license_manager }}.aws.maximumpigs.com:0899
+    when: license_manager != inventory_hostname_short
 
 # Node specific tasks
 
+  - name: Stage Web Server app
+    copy:
+      remote_src: yes
+      src: /opt/splunk/etc/apps/_webserver
+      dest: /opt/splunk/etc/deployment-apps/
+
   - name: Stage Index and Forward App
-    blockinfile: 
-      path: /opt/splunk/etc/deployment-apps/index_and_forward/default/outputs.conf
-      create: true
-      mode: '0655'
-      owner: 'splunk'
-      prepend_newline: true
-      block: |
-        [indexAndForward]
-        index = false
+    copy:
+      remote_src: yes
+      src: /opt/splunk/etc/apps/_index_and_forward
+      dest: /opt/splunk/etc/deployment-apps/
 
-        [tcpout]
-        defaultGroup = discovery-group
-        indexAndForward = false
-
-        [tcpout:discovery-group]
-        indexerDiscovery = idxdiscovery1
-
-        [indexer_discovery:idxdiscovery1]
-        manager_uri=https://splunkmgr0.aws.maximumpigs.com:8089
-        pass4SymmKey = idxdiscovery1
+  - name: Stage License App
+    copy:
+      remote_src: yes
+      src: /opt/splunk/etc/apps/_license
+      dest: /opt/splunk/etc/deployment-apps/
 
 # TODO Set Deployment Server Classes
 
@@ -113,7 +121,3 @@
     until: _result.status == 200
     retries: 20
     delay: 5
-
-  - name: Add license Manager
-    command: "/opt/splunk/bin/splunk edit licenser-localpeer -manager_uri 'https://{{ license_manager }}.aws.maximumpigs.com:8089' -auth admin:Administrator1!"
-    when: license_manager != inventory_hostname_short 
