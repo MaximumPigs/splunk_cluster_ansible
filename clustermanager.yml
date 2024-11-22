@@ -150,6 +150,12 @@
       owner: 'splunk'
       prepend_newline: true
       block: |
+        [default]
+        homePath = $SPLUNK_DB/$_index_name/db
+        coldPath = $SPLUNK_DB/$_index_name/colddb
+        thawedPath = $SPLUNK_DB/$_index_name/thawed
+        summaryHomePath = $SPLUNK_DB/$_index_name/summary
+
         [testindex]
 
   - name: Start Splunk
