@@ -1,6 +1,6 @@
 ---
 - name: Configure Cluster Manager
-  hosts: splunksh0
+  hosts: searchhead
   vars:
     license_manager: "splunkmgr1"
     deployment_server: "splunkmgr1"
