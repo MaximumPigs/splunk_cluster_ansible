@@ -188,4 +188,4 @@
     delay: 5
 
   - name: Stage cluster bundle
-    command: "/opt/splunk/bin/splunk apply shcluster-bundle -action stage -auth admin:Administrator1!"
+    command: "/opt/splunk/bin/splunk apply shcluster-bundle -action stage --answer-yes -auth admin:Administrator1!"
