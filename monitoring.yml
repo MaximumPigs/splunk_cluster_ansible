@@ -129,7 +129,8 @@
   - name: Make sure splunk folder is owned by splunk user
     file:
       path: /opt/splunk
-      owner: splunk
+      owner: 'splunk'
+      group: 'splunk'     
       recurse: yes
 
   - name: Start Splunk
@@ -153,6 +154,14 @@
 
 # Must be done here because of sh cluster automatic creation of /etc/local/distsearch.conf
 
+  - name: Make distsearch.conf
+    file:
+      path: /opt/splunk/etc/system/local/distsearch.conf
+      owner: splunk
+      group: splunk
+      mode: "0655"
+      state: touch
+
   - name: Check for MGR0 in distsearch.conf
     lineinfile:
       regex: 'https:\/\/splunkmgr0\.aws\.maximumpigs\.com:8089'
@@ -164,7 +173,7 @@
 
   - name: Add MGR0 as peer
     command: "/opt/splunk/bin/splunk add search-server https://splunkmgr0.aws.maximumpigs.com:8089 -auth admin:Administrator1! -remoteUsername admin -remotePassword Administrator1!"
-    when: mgr0.changed == true or sh0.rc != 0
+    when: mgr0.changed == true
 
   - name: Check for SH0 in distsearch.conf
     lineinfile:
@@ -177,7 +186,7 @@
 
   - name: Add SH0 as peer
     command: "/opt/splunk/bin/splunk add search-server https://splunksh0.aws.maximumpigs.com:8089 -auth admin:Administrator1! -remoteUsername admin -remotePassword Administrator1!"
-    when: sh0.changed == true or sh0.rc != 0
+    when: sh0.changed == true
 
   - name: Check for SH1 in distsearch.conf
     lineinfile:
@@ -190,7 +199,7 @@
 
   - name: Add SH1 as peer
     command: "/opt/splunk/bin/splunk add search-server https://splunksh0.aws.maximumpigs.com:8089 -auth admin:Administrator1! -remoteUsername admin -remotePassword Administrator1!"
-    when: sh1.changed == true or sh0.rc != 0
+    when: sh1.changed == true
 
   - name: Check for SH2 in distsearch.conf
     lineinfile:
@@ -203,4 +212,4 @@
 
   - name: Add SH2 as peer
     command: "/opt/splunk/bin/splunk add search-server https://splunksh0.aws.maximumpigs.com:8089 -auth admin:Administrator1! -remoteUsername admin -remotePassword Administrator1!"
-    when: sh2.changed == true or sh0.rc != 0
+    when: sh2.changed == true
