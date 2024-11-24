@@ -147,7 +147,7 @@
       regex: 'https:\/\/splunkmgr0\.aws\.maximumpigs\.com:8089'
       line: line
     check_mode: yes
-    regisger: mgr0
+    register: mgr0
 
   - name: Add MGR0 as peer
     command: "/opt/splunk/bin/splunk add search-server https://splunkmgr0.aws.maximumpigs.com:8089 -auth admin:Administrator1! -remoteUsername admin -remotePassword Administrator1!"
@@ -158,7 +158,7 @@
       regex: 'https:\/\/splunksh0\.aws\.maximumpigs\.com:8089'
       line: line
     check_mode: yes
-    regisger: sh0
+    register: sh0
 
   - name: Add SH0 as peer
     command: "/opt/splunk/bin/splunk add search-server https://splunksh0.aws.maximumpigs.com:8089 -auth admin:Administrator1! -remoteUsername admin -remotePassword Administrator1!"
@@ -169,7 +169,7 @@
       regex: 'https:\/\/splunksh1\.aws\.maximumpigs\.com:8089'
       line: line
     check_mode: yes
-    regisger: sh1
+    register: sh1
 
   - name: Add SH1 as peer
     command: "/opt/splunk/bin/splunk add search-server https://splunksh0.aws.maximumpigs.com:8089 -auth admin:Administrator1! -remoteUsername admin -remotePassword Administrator1!"
@@ -180,7 +180,7 @@
       regex: 'https:\/\/splunksh2\.aws\.maximumpigs\.com:8089'
       line: line
     check_mode: yes
-    regisger: sh2
+    register: sh2
 
   - name: Add SH2 as peer
     command: "/opt/splunk/bin/splunk add search-server https://splunksh0.aws.maximumpigs.com:8089 -auth admin:Administrator1! -remoteUsername admin -remotePassword Administrator1!"
