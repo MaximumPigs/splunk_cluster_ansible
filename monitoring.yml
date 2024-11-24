@@ -198,7 +198,7 @@
     register: sh1
 
   - name: Add SH1 as peer
-    command: "/opt/splunk/bin/splunk add search-server https://splunksh0.aws.maximumpigs.com:8089 -auth admin:Administrator1! -remoteUsername admin -remotePassword Administrator1!"
+    command: "/opt/splunk/bin/splunk add search-server https://splunksh1.aws.maximumpigs.com:8089 -auth admin:Administrator1! -remoteUsername admin -remotePassword Administrator1!"
     when: sh1.changed == true
 
   - name: Check for SH2 in distsearch.conf
@@ -211,5 +211,5 @@
     register: sh2
 
   - name: Add SH2 as peer
-    command: "/opt/splunk/bin/splunk add search-server https://splunksh0.aws.maximumpigs.com:8089 -auth admin:Administrator1! -remoteUsername admin -remotePassword Administrator1!"
+    command: "/opt/splunk/bin/splunk add search-server https://splunksh2.aws.maximumpigs.com:8089 -auth admin:Administrator1! -remoteUsername admin -remotePassword Administrator1!"
     when: sh2.changed == true
