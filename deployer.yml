@@ -186,3 +186,6 @@
     until: _result.status == 200
     retries: 20
     delay: 5
+
+  - name: Stage cluster bundle
+    command: "/opt/splunk/bin/splunk apply shcluster-bundle -action stage -auth admin:Administrator1!"
