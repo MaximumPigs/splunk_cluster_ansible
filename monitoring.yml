@@ -146,6 +146,7 @@
     lineinfile:
       regex: 'https:\/\/splunkmgr0\.aws\.maximumpigs\.com:8089'
       line: line
+      path: /opt/splunk/etc/system/local/distsearch.conf
     check_mode: yes
     register: mgr0
 
@@ -157,6 +158,7 @@
     lineinfile:
       regex: 'https:\/\/splunksh0\.aws\.maximumpigs\.com:8089'
       line: line
+      path: /opt/splunk/etc/system/local/distsearch.conf
     check_mode: yes
     register: sh0
 
@@ -168,6 +170,7 @@
     lineinfile:
       regex: 'https:\/\/splunksh1\.aws\.maximumpigs\.com:8089'
       line: line
+      path: /opt/splunk/etc/system/local/distsearch.conf
     check_mode: yes
     register: sh1
 
@@ -179,6 +182,7 @@
     lineinfile:
       regex: 'https:\/\/splunksh2\.aws\.maximumpigs\.com:8089'
       line: line
+      path: /opt/splunk/etc/system/local/distsearch.conf
     check_mode: yes
     register: sh2
 
