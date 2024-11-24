@@ -17,4 +17,4 @@
 - import_playbook: searchhead.yml
 
 # Monitoring
-- import_playbook: monitopring.yml
+- import_playbook: monitoring.yml
