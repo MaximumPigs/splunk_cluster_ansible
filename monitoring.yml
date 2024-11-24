@@ -95,7 +95,7 @@
 
 # Node specific tasks
 
-## Configure Cluster
+## Configure as Search head of indexer Cluster
 
   - name: Create _indexer_cluster app
     blockinfile: 
@@ -110,6 +110,17 @@
         cluster_label = idxcluster1
         manager_uri = https://{{ cluster_manager }}.aws.maximumpigs.com:8089
         pass4SymmKey = idxcluster1
+
+  - name: Create _distsearch app
+    blockinfile: 
+      path: /opt/splunk/etc/apps/_distsearch/default/distsearch.conf
+      create: true
+      mode: '0655'
+      owner: 'splunk'
+      prepend_newline: true
+      block: |
+        [distributedSearch]
+        servers = https://splunkmgr0.aws.maximumpigs.com:8089,https://splunksh0.aws.maximumpigs.com:8089,https://splunksh1.aws.maximumpigs.com:8089,https://splunksh2.aws.maximumpigs.com:8089
 
 # TODO - Enable distributed monitoring
 
@@ -142,50 +153,50 @@
 
 # Must be done here because of sh cluster automatic creation of /etc/local/distsearch.conf
 
-  - name: Check for MGR0 in distsearch.conf
-    lineinfile:
-      regex: 'https:\/\/splunkmgr0\.aws\.maximumpigs\.com:8089'
-      line: line
-      path: /opt/splunk/etc/system/local/distsearch.conf
-    check_mode: yes
-    register: mgr0
+  # - name: Check for MGR0 in distsearch.conf
+  #   lineinfile:
+  #     regex: 'https:\/\/splunkmgr0\.aws\.maximumpigs\.com:8089'
+  #     line: line
+  #     path: /opt/splunk/etc/system/local/distsearch.conf
+  #   check_mode: yes
+  #   register: mgr0
 
-  - name: Add MGR0 as peer
-    command: "/opt/splunk/bin/splunk add search-server https://splunkmgr0.aws.maximumpigs.com:8089 -auth admin:Administrator1! -remoteUsername admin -remotePassword Administrator1!"
-    when: mgr0.changed == true
+  # - name: Add MGR0 as peer
+  #   command: "/opt/splunk/bin/splunk add search-server https://splunkmgr0.aws.maximumpigs.com:8089 -auth admin:Administrator1! -remoteUsername admin -remotePassword Administrator1!"
+  #   when: mgr0.changed == true
 
-  - name: Check for SH0 in distsearch.conf
-    lineinfile:
-      regex: 'https:\/\/splunksh0\.aws\.maximumpigs\.com:8089'
-      line: line
-      path: /opt/splunk/etc/system/local/distsearch.conf
-    check_mode: yes
-    register: sh0
+  # - name: Check for SH0 in distsearch.conf
+  #   lineinfile:
+  #     regex: 'https:\/\/splunksh0\.aws\.maximumpigs\.com:8089'
+  #     line: line
+  #     path: /opt/splunk/etc/system/local/distsearch.conf
+  #   check_mode: yes
+  #   register: sh0
 
-  - name: Add SH0 as peer
-    command: "/opt/splunk/bin/splunk add search-server https://splunksh0.aws.maximumpigs.com:8089 -auth admin:Administrator1! -remoteUsername admin -remotePassword Administrator1!"
-    when: sh0.changed == true
+  # - name: Add SH0 as peer
+  #   command: "/opt/splunk/bin/splunk add search-server https://splunksh0.aws.maximumpigs.com:8089 -auth admin:Administrator1! -remoteUsername admin -remotePassword Administrator1!"
+  #   when: sh0.changed == true
 
-  - name: Check for SH1 in distsearch.conf
-    lineinfile:
-      regex: 'https:\/\/splunksh1\.aws\.maximumpigs\.com:8089'
-      line: line
-      path: /opt/splunk/etc/system/local/distsearch.conf
-    check_mode: yes
-    register: sh1
+  # - name: Check for SH1 in distsearch.conf
+  #   lineinfile:
+  #     regex: 'https:\/\/splunksh1\.aws\.maximumpigs\.com:8089'
+  #     line: line
+  #     path: /opt/splunk/etc/system/local/distsearch.conf
+  #   check_mode: yes
+  #   register: sh1
 
-  - name: Add SH1 as peer
-    command: "/opt/splunk/bin/splunk add search-server https://splunksh0.aws.maximumpigs.com:8089 -auth admin:Administrator1! -remoteUsername admin -remotePassword Administrator1!"
-    when: sh1.changed == true
+  # - name: Add SH1 as peer
+  #   command: "/opt/splunk/bin/splunk add search-server https://splunksh0.aws.maximumpigs.com:8089 -auth admin:Administrator1! -remoteUsername admin -remotePassword Administrator1!"
+  #   when: sh1.changed == true
 
-  - name: Check for SH2 in distsearch.conf
-    lineinfile:
-      regex: 'https:\/\/splunksh2\.aws\.maximumpigs\.com:8089'
-      line: line
-      path: /opt/splunk/etc/system/local/distsearch.conf
-    check_mode: yes
-    register: sh2
+  # - name: Check for SH2 in distsearch.conf
+  #   lineinfile:
+  #     regex: 'https:\/\/splunksh2\.aws\.maximumpigs\.com:8089'
+  #     line: line
+  #     path: /opt/splunk/etc/system/local/distsearch.conf
+  #   check_mode: yes
+  #   register: sh2
 
-  - name: Add SH2 as peer
-    command: "/opt/splunk/bin/splunk add search-server https://splunksh0.aws.maximumpigs.com:8089 -auth admin:Administrator1! -remoteUsername admin -remotePassword Administrator1!"
-    when: sh2.changed == true
+  # - name: Add SH2 as peer
+  #   command: "/opt/splunk/bin/splunk add search-server https://splunksh0.aws.maximumpigs.com:8089 -auth admin:Administrator1! -remoteUsername admin -remotePassword Administrator1!"
+  #   when: sh2.changed == true
