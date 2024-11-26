@@ -115,7 +115,7 @@
 
   - name: Stage _shclustering app
     blockinfile: 
-      path: /opt/splunk/etc/apps/_shclustering/default/outputs.conf
+      path: /opt/splunk/etc/shcluster/apps/_shclustering/default/outputs.conf
       create: true
       mode: '0655'
       owner: 'splunk'
